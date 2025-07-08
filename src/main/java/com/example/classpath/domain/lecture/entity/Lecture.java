@@ -1,5 +1,6 @@
 package com.example.classpath.domain.lecture.entity;
 
+import com.example.classpath.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import java.time.LocalTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Lecture { //TODO BaseEntity 상속
+public class Lecture extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
