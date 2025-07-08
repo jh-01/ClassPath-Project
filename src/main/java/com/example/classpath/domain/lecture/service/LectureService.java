@@ -2,11 +2,14 @@ package com.example.classpath.domain.lecture.service;
 
 import com.example.classpath.domain.lecture.dto.LectureCreateRequest;
 import com.example.classpath.domain.lecture.dto.LectureResponse;
+import com.example.classpath.domain.lecture.dto.LectureSearchCondition;
 import com.example.classpath.domain.lecture.dto.LectureUpdateRequest;
 import com.example.classpath.domain.lecture.entity.Lecture;
 import com.example.classpath.domain.lecture.repository.LectureRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +60,10 @@ public class LectureService {
         lecture.updateName(requestDto.getName());
         lecture.updateMaxEnrollment(requestDto.getMaxEnrollment());
         return new LectureResponse(lecture);
+    }
+
+    public Page<LectureResponse> searchLecture(LectureSearchCondition condition, Pageable pageable) {
+        return lectureRepository.searchLecture(condition, pageable);
     }
 
     private boolean isValidLectureTime(LocalTime startTime, LocalTime endTime) {
