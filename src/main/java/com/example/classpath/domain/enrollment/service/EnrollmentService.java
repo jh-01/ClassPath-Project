@@ -43,4 +43,15 @@ public class EnrollmentService {
                                           .build();
         enrollmentRepository.save(enrollment);
     }
+
+    @Transactional
+    public void cancel(Long userId, Long lectureId) {
+        Enrollment enrollment = enrollmentRepository.findByUserIdAndLectureId(userId, lectureId)
+                                                    .orElseThrow(() -> {
+                                                        // TODO: 커스텀 예외로 교체
+                                                        throw new IllegalArgumentException();
+                                                    });
+
+        enrollmentRepository.delete(enrollment);
+    }
 }
