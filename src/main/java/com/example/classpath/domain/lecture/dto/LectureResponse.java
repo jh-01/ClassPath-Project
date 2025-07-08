@@ -27,7 +27,7 @@ public class LectureResponse {
         this.maxEnrollment = lecture.getMaxEnrollment();
         this.currentEnrollment = lecture.getCurrentEnrollment();
         this.dayOfWeek = lecture.getDayOfWeek();
-        this.startTime = lecture.getEndTime();
+        this.startTime = lecture.getStartTime();
         this.endTime = lecture.getEndTime();
         // TODO createdAt, modifiedAt 추가
     }
