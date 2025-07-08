@@ -1,16 +1,12 @@
 package com.example.classpath.domain.lecture.repository;
 
-import com.example.classpath.domain.enrollment.entity.QEnrollment;
-import com.example.classpath.domain.lecture.dto.LectureResponse;
-import com.example.classpath.domain.lecture.dto.LectureSearchCondition;
-import com.example.classpath.domain.lecture.dto.QLectureResponse;
-import com.example.classpath.domain.lecture.entity.QLecture;
+import com.example.classpath.domain.lecture.dto.*;
+import com.example.classpath.domain.lecture.entity.Lecture;
 import com.example.classpath.domain.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -19,6 +15,8 @@ import java.util.List;
 
 import static com.example.classpath.domain.enrollment.entity.QEnrollment.enrollment;
 import static com.example.classpath.domain.lecture.entity.QLecture.*;
+import static com.example.classpath.domain.user.entity.QUser.user;
+
 public class LectureRepositoryCustomImpl implements LectureRepositoryCustom {
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
@@ -59,6 +57,23 @@ public class LectureRepositoryCustomImpl implements LectureRepositoryCustom {
                 .where(enrollment.user.eq(user))
                 .fetch();
     }
+
+    @Override
+    public Page<StudentResponse> findStudentsByLecture(Lecture lecture, Pageable pageable) {
+        List<StudentResponse> content = queryFactory.select(new QStudentResponse(user))
+                .from(enrollment)
+                .join(enrollment.user, user)
+                .where(enrollment.lecture.eq(lecture))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(user.userNumber.asc())
+                .fetch();
+        JPAQuery<Long> countQuery = queryFactory.select(enrollment.count())
+                .from(enrollment)
+                .where(enrollment.lecture.eq(lecture));
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
 
     private BooleanExpression nameContain(String name) {
         return name != null ? lecture.name.contains(name) : null;

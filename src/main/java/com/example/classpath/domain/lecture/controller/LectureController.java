@@ -1,10 +1,8 @@
 package com.example.classpath.domain.lecture.controller;
 
-import com.example.classpath.domain.lecture.dto.LectureCreateRequest;
-import com.example.classpath.domain.lecture.dto.LectureResponse;
-import com.example.classpath.domain.lecture.dto.LectureSearchCondition;
-import com.example.classpath.domain.lecture.dto.LectureUpdateRequest;
+import com.example.classpath.domain.lecture.dto.*;
 import com.example.classpath.domain.lecture.service.LectureService;
+import com.example.classpath.domain.user.dto.UserRegisterResponse;
 import com.example.classpath.global.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -80,9 +78,14 @@ public class LectureController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("나의 강의 정보를 조회했습니다.", response));
     }
 
-
-
-//    @GetMapping("/{lectureId}/users")
-//    public ResponseEntity<ApiResponse<Page<LectureResponse>>>
+    /**
+     * 강의별 수강생 목록 조회
+     */
+    @GetMapping("/{lectureId}/students")
+    public ResponseEntity<ApiResponse<Page<StudentResponse>>> getStudentsByLecture(@PathVariable Long lectureId,
+                                                                                   @PageableDefault(size = 20) Pageable pageable) {
+        Page<StudentResponse> page = lectureService.getStudentsByLecture(lectureId, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("수강생 목록을 조회했습니다.", page));
+    }
 
 }

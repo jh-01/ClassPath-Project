@@ -2,6 +2,9 @@ package com.example.classpath.domain.lecture.repository;
 
 import com.example.classpath.domain.lecture.dto.LectureResponse;
 import com.example.classpath.domain.lecture.dto.LectureSearchCondition;
+import com.example.classpath.domain.lecture.dto.StudentResponse;
+import com.example.classpath.domain.lecture.entity.Lecture;
+import com.example.classpath.domain.user.dto.UserRegisterResponse;
 import com.example.classpath.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,4 +16,5 @@ public interface LectureRepositoryCustom {
 
     List<LectureResponse> findAllUserLecture(User user);
 
+    Page<StudentResponse> findStudentsByLecture(Lecture lecture, Pageable pageable);
 }

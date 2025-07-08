@@ -1,14 +1,12 @@
 package com.example.classpath.domain.lecture.service;
 
-import com.example.classpath.domain.lecture.dto.LectureCreateRequest;
-import com.example.classpath.domain.lecture.dto.LectureResponse;
-import com.example.classpath.domain.lecture.dto.LectureSearchCondition;
-import com.example.classpath.domain.lecture.dto.LectureUpdateRequest;
+import com.example.classpath.domain.lecture.dto.*;
 import com.example.classpath.domain.lecture.entity.Lecture;
 import com.example.classpath.domain.lecture.exception.LectureCodeAlreadyExistException;
 import com.example.classpath.domain.lecture.exception.LectureNotFoundException;
 import com.example.classpath.domain.lecture.exception.LectureTimeInvalidException;
 import com.example.classpath.domain.lecture.repository.LectureRepository;
+import com.example.classpath.domain.user.dto.UserRegisterResponse;
 import com.example.classpath.domain.user.entity.User;
 import com.example.classpath.domain.user.repository.UserRepository;
 import com.example.classpath.global.exception.BusinessException;
@@ -89,5 +87,10 @@ public class LectureService {
 
     private boolean isValidLectureTime(LocalTime startTime, LocalTime endTime) {
         return startTime.isBefore(endTime);
+    }
+
+    public Page<StudentResponse> getStudentsByLecture(Long lectureId, Pageable pageable) {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
+        return lectureRepository.findStudentsByLecture(lecture, pageable);
     }
 }
