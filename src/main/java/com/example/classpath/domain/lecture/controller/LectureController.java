@@ -54,6 +54,15 @@ public class LectureController {
     }
 
     /**
+     * 강의 단건 조회
+     */
+    @GetMapping("{lectureId}")
+    public ResponseEntity<ApiResponse<LectureResponse>> getLecture(@PathVariable Long lectureId) {
+        LectureResponse response = lectureService.getLecture(lectureId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("강의 정보를 조회했습니다.", response));
+    }
+
+    /**
      * 강의 전체 조회
      */
     @GetMapping
@@ -70,6 +79,8 @@ public class LectureController {
         List<LectureResponse> response = lectureService.getMyLectures(userId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("나의 강의 정보를 조회했습니다.", response));
     }
+
+
 
 //    @GetMapping("/{lectureId}/users")
 //    public ResponseEntity<ApiResponse<Page<LectureResponse>>>

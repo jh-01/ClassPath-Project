@@ -72,9 +72,6 @@ public class LectureService {
         return lectureRepository.searchLecture(condition, pageable);
     }
 
-    private boolean isValidLectureTime(LocalTime startTime, LocalTime endTime) {
-        return startTime.isBefore(endTime);
-    }
 
     public List<LectureResponse> getLectures() {
         return lectureRepository.findAll().stream().map(LectureResponse::new).toList();
@@ -83,5 +80,14 @@ public class LectureService {
     public List<LectureResponse> getMyLectures(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorType.USER_NOT_FOUND));
         return lectureRepository.findAllUserLecture(user);
+    }
+
+    public LectureResponse getLecture(Long lectureId) {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
+        return new LectureResponse(lecture);
+    }
+
+    private boolean isValidLectureTime(LocalTime startTime, LocalTime endTime) {
+        return startTime.isBefore(endTime);
     }
 }
