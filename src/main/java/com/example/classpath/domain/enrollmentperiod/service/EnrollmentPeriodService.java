@@ -3,6 +3,7 @@ package com.example.classpath.domain.enrollmentperiod.service;
 import com.example.classpath.domain.enrollmentperiod.dto.request.EnrollmentPeriodRequest;
 import com.example.classpath.domain.enrollmentperiod.entity.EnrollmentPeriod;
 import com.example.classpath.domain.enrollmentperiod.repository.EnrollmentPeriodRepository;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,13 @@ public class EnrollmentPeriodService {
                                                             .orElseThrow(
                                                                 () -> new IllegalArgumentException());
         period.update(request.getStartAt(), request.getEndAt());
+    }
+
+    // 날짜 유효성 검사
+    private void validatePeriod(LocalDateTime startAt, LocalDateTime endAt) {
+        if (startAt.isAfter(endAt)) {
+            throw new IllegalArgumentException();
+        }
     }
 
     // 최신 수강신청 기간 조회
