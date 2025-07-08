@@ -3,6 +3,7 @@ package com.example.classpath.domain.enrollmentperiod.service;
 import com.example.classpath.domain.enrollmentperiod.dto.request.EnrollmentPeriodRequest;
 import com.example.classpath.domain.enrollmentperiod.entity.EnrollmentPeriod;
 import com.example.classpath.domain.enrollmentperiod.repository.EnrollmentPeriodRepository;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ public class EnrollmentPeriodService {
 
     private final EnrollmentPeriodRepository enrollmentPeriodRepository;
 
-    // 수강신청 기간 등록
+    // 수강신청 기간 설정
     @Transactional
     public void enroll(Long id, EnrollmentPeriodRequest request) {
         // TODO: 예외 검증 필요
@@ -34,5 +35,12 @@ public class EnrollmentPeriodService {
                                                             .orElseThrow(
                                                                 () -> new IllegalArgumentException());
         period.update(request.getStartAt(), request.getEndAt());
+    }
+
+    // 최신 수강신청 기간 조회
+    @Transactional(readOnly = true)
+    public EnrollmentPeriod getLatestPeriod() {
+        return enrollmentPeriodRepository.findTopByOrderByCreatedAtDesc()
+            .orElseThrow(()->new NoSuchElementException());
     }
 }
