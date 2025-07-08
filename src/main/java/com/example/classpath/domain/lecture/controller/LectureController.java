@@ -1,7 +1,15 @@
 package com.example.classpath.domain.lecture.controller;
 
+import com.example.classpath.domain.lecture.dto.LectureCreateRequest;
+import com.example.classpath.domain.lecture.dto.LectureResponse;
 import com.example.classpath.domain.lecture.service.LectureService;
+import com.example.classpath.global.common.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,4 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class LectureController {
     private final LectureService lectureService;
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<LectureResponse>> createLecture(@Valid @RequestBody LectureCreateRequest requestDto) {
+        LectureResponse response = lectureService.createLecture(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("강의를 개설하였습니다.", response));
+    }
+
 }
