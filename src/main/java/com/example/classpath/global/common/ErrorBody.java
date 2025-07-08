@@ -3,8 +3,13 @@ package com.example.classpath.global.common;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
-@Builder
 public class ErrorBody {
-    private ErrorDetail error;
+    private List<ErrorDetail> errors;
+
+    public ErrorBody(List<ErrorDetail> errors) {
+        this.errors = errors;
+    }
 }
