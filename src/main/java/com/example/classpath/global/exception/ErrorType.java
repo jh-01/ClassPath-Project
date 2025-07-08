@@ -6,9 +6,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorType {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 유저입니다."),
-    DUPLICATED_USER_NUMBER(HttpStatus.CONFLICT, "중복된 학번(교번)입니다.")
-
-    ;
+    DUPLICATE_USERNUMBER(HttpStatus.CONFLICT, "이미 가입된 유저입니다.");
 
     private final HttpStatus httpStatus;
     private final String errorMessage;

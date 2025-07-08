@@ -1,6 +1,5 @@
 package com.example.classpath.domain.user.entity;
 
-import com.example.classpath.domain.user.dto.response.UserCreateResponse;
 import com.example.classpath.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -26,23 +25,12 @@ public class User extends BaseEntity {
 
     @NotBlank(message = "비밀번호는 필수입니다.")
     @Pattern(
-            regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*()_+=\\-\\[\\]{};':\"\\\\|,.<>/?]).{8,20}$",
-            message = "비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자리여야 합니다."
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d).{8,20}$",
+            message = "비밀번호는 영문과 숫자를 포함한 8~20자리여야 합니다."
     )
     private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
-
-    public UserCreateResponse toDto(User user){
-        return new UserCreateResponse(
-                user.getId(),
-                user.getUserNumber(),
-                user.getName(),
-                user.getRole(),
-                user.getCreatedAt(),
-                user.getModifiedAt()
-        );
-    }
 }
