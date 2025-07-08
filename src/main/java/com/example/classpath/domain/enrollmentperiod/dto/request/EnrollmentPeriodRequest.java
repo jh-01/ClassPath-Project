@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class EnrollmentPeriodRequest {
+
     @NotNull(message = "시작일은 필수입니다.")
     private final LocalDateTime startAt;
 
