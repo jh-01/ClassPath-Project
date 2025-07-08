@@ -29,4 +29,9 @@ public class EnrollmentPeriod extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime endAt;
+
+    public void update(LocalDateTime startAt, LocalDateTime endAt) {
+        this.startAt = startAt;
+        this.endAt = endAt;
+    }
 }

@@ -18,11 +18,21 @@ public class EnrollmentPeriodService {
     public void enroll(Long id, EnrollmentPeriodRequest request) {
         // TODO: 예외 검증 필요
         EnrollmentPeriod period = EnrollmentPeriod.builder()
-            .id(id)
-            .startAt(request.getStartAt())
-            .endAt(request.getEndAt())
-            .build();
+                                                  .id(id)
+                                                  .startAt(request.getStartAt())
+                                                  .endAt(request.getEndAt())
+                                                  .build();
 
         enrollmentPeriodRepository.save(period);
+    }
+
+    // 수강신청 기간 수정
+    @Transactional
+    public void updatePeriod(Long id, EnrollmentPeriodRequest request) {
+        EnrollmentPeriod period = enrollmentPeriodRepository.findById(id)
+                                                            // TODO: 커스텀 예외로 교체
+                                                            .orElseThrow(
+                                                                () -> new IllegalArgumentException());
+        period.update(request.getStartAt(), request.getEndAt());
     }
 }
