@@ -37,17 +37,17 @@ public class Lecture { //TODO BaseEntity 상속
     private LocalTime endTime;
 
 
-    private Lecture(String name, String code, Integer maxEnrollment, Integer currentEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
+    private Lecture(String name, String code, Integer maxEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
         this.name = name;
         this.code = code;
         this.maxEnrollment = maxEnrollment;
-        this.currentEnrollment = currentEnrollment;
+        this.currentEnrollment = 0;
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    public static Lecture of(String name, String code, Integer maxEnrollment, Integer currentEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
-        return new Lecture(name, code, maxEnrollment, currentEnrollment, dayOfWeek, startTime, endTime);
+    public static Lecture of(String name, String code, Integer maxEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
+        return new Lecture(name, code, maxEnrollment, dayOfWeek, startTime, endTime);
     }
 }
