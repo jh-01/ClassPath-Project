@@ -4,6 +4,7 @@ import com.example.classpath.domain.lecture.dto.LectureCreateRequest;
 import com.example.classpath.domain.lecture.dto.LectureResponse;
 import com.example.classpath.domain.lecture.entity.Lecture;
 import com.example.classpath.domain.lecture.repository.LectureRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,13 @@ public class LectureService {
         lectureRepository.save(lecture);
 
         return new LectureResponse(lecture);
+    }
+
+    @Transactional
+    public void deleteLecture(Long lectureId) {
+        //TODO 강의 삭제 시 Enrollment도 삭제 (Persist.REMOVE 사용해서)
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new EntityNotFoundException("강의가 존재하지 않습니다."));
+        lectureRepository.delete(lecture);
     }
 
     private boolean isValidLectureTime(LocalTime startTime, LocalTime endTime) {

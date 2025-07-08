@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/lectures")
@@ -23,6 +20,12 @@ public class LectureController {
     public ResponseEntity<ApiResponse<LectureResponse>> createLecture(@Valid @RequestBody LectureCreateRequest requestDto) {
         LectureResponse response = lectureService.createLecture(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("강의를 개설하였습니다.", response));
+    }
+
+    @DeleteMapping("{lectureId}")
+    public ResponseEntity<ApiResponse<Void>> deleteLecture(@PathVariable Long lectureId) {
+        lectureService.deleteLecture(lectureId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success("강의를 삭제했습니다.",null));
     }
 
 }
