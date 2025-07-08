@@ -1,5 +1,6 @@
 package com.example.classpath.domain.user.entity;
 
+import com.example.classpath.domain.user.dto.UserRegisterResponse;
 import com.example.classpath.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -29,4 +30,20 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+
+    public UserRegisterResponse toDto(User user){
+        return new UserRegisterResponse(
+                user.getId(),
+                user.getUserNumber(),
+                user.getName(),
+                user.getRole(),
+                user.getCreatedAt(),
+                user.getModifiedAt()
+        );
+    }
+
+    public void changePassword(String newPassword){
+        this.password = newPassword;
+    }
 }
