@@ -1,6 +1,5 @@
 package com.example.classpath.global.exception;
 
-import com.example.classpath.global.common.ErrorType;
 import lombok.Getter;
 
 @Getter
