@@ -6,6 +6,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +17,19 @@ import java.util.Date;
 @Component
 public class JWTTokenProvider {
 
+    private Key key;
+
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private Key key;
 
     @Value("${jwt.expiration}")
     private Long accessTokenExpiration;    // 3600000L = 1시간
+
+    @PostConstruct    // 빈 생성 -> 주입 후 자동으로 실행되는게 만들어주는 어노테이션
+    protected void initKey() {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());    // jwt 서명 / 검증에 사용될 key 객체를 생성해서 저장
+    }
 
     // 토큰 생성
     public String generateToken(Long userId, String userNumber, Role role) {
