@@ -16,7 +16,7 @@ public class EnrollmentPeriodService {
 
     // 수강신청 기간 설정
     @Transactional
-    public void enroll(Long id, EnrollmentPeriodRequest request) {
+    public void createPeriod(Long id, EnrollmentPeriodRequest request) {
         // TODO: 예외 검증 필요
         EnrollmentPeriod period = EnrollmentPeriod.builder()
                                                   .id(id)
