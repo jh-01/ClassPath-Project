@@ -5,7 +5,6 @@ import com.example.classpath.domain.enrollmentperiod.entity.EnrollmentPeriod;
 import com.example.classpath.domain.enrollmentperiod.service.EnrollmentPeriodService;
 import com.example.classpath.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,5 +31,12 @@ public class EnrollmentPeriodController {
     public ApiResponse<Void> updatePeriod(@PathVariable Long id, @RequestBody EnrollmentPeriodRequest request) {
         enrollmentPeriodService.updatePeriod(id, request);
         return ApiResponse.success("수강신청 기간이 수정되었습니다.", null);
+    }
+
+    // 수강신청 기간 조회
+    @GetMapping("/latest")
+    public ApiResponse<EnrollmentPeriod> getLatestPeriod() {
+        EnrollmentPeriod enrollmentPeriod = enrollmentPeriodService.getLatestPeriod();
+        return ApiResponse.success("최신 수강신청 기간을 조회했습니다.", enrollmentPeriod);
     }
 }
