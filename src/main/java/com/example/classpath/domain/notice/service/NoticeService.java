@@ -7,6 +7,7 @@ import com.example.classpath.domain.user.entity.User;
 import com.example.classpath.domain.user.repository.UserRepository;
 import com.example.classpath.global.exception.BusinessException;
 import com.example.classpath.global.exception.ErrorType;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ public class NoticeService {
         return new NoticeResponseDto(notice);
     }
 
+    @Transactional
     // 공지 수정
     public NoticeResponseDto updateNotice(Long id, String title, String contents) {
 
@@ -57,6 +59,7 @@ public class NoticeService {
         return new NoticeResponseDto(notice);
     }
 
+    @Transactional
     // 공지 삭제
     public void deleteNotice(Long id) {
 
@@ -66,4 +69,6 @@ public class NoticeService {
 
         noticeRepository.delete(notice);
     }
+
+
 }
