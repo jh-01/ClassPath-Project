@@ -13,8 +13,6 @@ import java.time.LocalTime;
 @NoArgsConstructor
 
 public class LectureCreateRequest {
-    // TODO 검증 메시지는 추후에 resource 파일로 관리할 예정
-
     @NotBlank
     private String name;
     @NotBlank

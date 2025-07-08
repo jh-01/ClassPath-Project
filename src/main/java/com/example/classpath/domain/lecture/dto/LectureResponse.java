@@ -2,6 +2,7 @@ package com.example.classpath.domain.lecture.dto;
 
 import com.example.classpath.domain.lecture.entity.DayOfWeek;
 import com.example.classpath.domain.lecture.entity.Lecture;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class LectureResponse {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
+    @QueryProjection
     public LectureResponse(Lecture lecture) {
         this.id = lecture.getId();
         this.name = lecture.getName();
@@ -29,6 +31,7 @@ public class LectureResponse {
         this.dayOfWeek = lecture.getDayOfWeek();
         this.startTime = lecture.getStartTime();
         this.endTime = lecture.getEndTime();
-        // TODO createdAt, modifiedAt 추가
+        this.createdAt = lecture.getCreatedAt();
+        this.modifiedAt = lecture.getModifiedAt();
     }
 }
