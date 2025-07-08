@@ -1,5 +1,6 @@
 package com.example.classpath.global.common;
 
+import com.example.classpath.global.exception.ErrorType;
 import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
