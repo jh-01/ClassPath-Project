@@ -42,4 +42,8 @@ public class User extends BaseEntity {
                 user.getModifiedAt()
         );
     }
+
+    public void changePassword(String newPassword){
+        this.password = newPassword;
+    }
 }

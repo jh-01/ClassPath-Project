@@ -1,5 +1,6 @@
 package com.example.classpath.domain.user.service;
 
+import com.example.classpath.domain.user.dto.UserChangePasswordRequest;
 import com.example.classpath.domain.user.dto.UserRegisterRequestDto;
 import com.example.classpath.domain.user.dto.UserRegisterResponse;
 import com.example.classpath.domain.user.entity.Role;
@@ -35,7 +36,7 @@ public class UserService {
         // 4. 저장
         userRepository.save(user);
 
-        // 저장한 유저 조회
+        // 5. 저장한 유저 조회
         User savedUser = userRepository.findById(user.getId()).orElseThrow(
                 () -> new CustomException(ErrorType.USER_NOT_FOUND)
         );
@@ -43,4 +44,24 @@ public class UserService {
         return savedUser.toDto(savedUser);
     }
 
+    // 유저 비밀번호 변경
+    public void changePassword(Long id, UserChangePasswordRequest request){
+        // 1. 해당 유저 찾기
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new CustomException(ErrorType.USER_NOT_FOUND)
+        );
+
+        // 2. 비밀번호 검증
+        if(!passwordEncoder.matches(request.getOldPassword(), user.getPassword())){
+            throw new CustomException(ErrorType.INVALID_CREDENTIALS);
+        }
+        
+        // 3. 비밀번호 암호화
+        String encodedNewPassword = passwordEncoder.encode(request.getNewPassword());
+
+        // 4. 비밀번호 업데이트
+        user.changePassword(encodedNewPassword);
+
+        userRepository.save(user);
+    }
 }
