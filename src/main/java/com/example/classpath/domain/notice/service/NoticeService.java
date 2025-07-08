@@ -41,4 +41,19 @@ public class NoticeService {
 
         return new NoticeResponseDto(notice);
     }
+
+    // 공지 수정
+    public NoticeResponseDto updateNotice(Long id, String title, String contents) {
+
+        // 공지사항이 있는지 확인
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorType.NOTICE_NOT_FOUND));
+
+        // 공지사항 수정
+        notice.updateNoticeInfo(title, contents);
+
+        noticeRepository.save(notice);
+
+        return new NoticeResponseDto(notice);
+    }
 }

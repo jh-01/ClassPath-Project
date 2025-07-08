@@ -33,4 +33,11 @@ public class NoticeController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success("공지사항을 조회하였습니다.", noticeService.getNotice(id)));
     }
+
+    // 공지 수정
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<NoticeResponseDto>> updateNotice(@PathVariable Long id, @RequestBody NoticeCreateRequestDto requestDto){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success("공지사항이 수정되었습니다.", noticeService.updateNotice(id, requestDto.getTitle(), requestDto.getContents())));
+    }
 }
