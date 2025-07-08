@@ -1,6 +1,8 @@
 package com.example.classpath.domain.user.dto;
 
+import com.example.classpath.domain.user.entity.Role;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +19,11 @@ public class UserRegisterRequestDto {
 
     @NotBlank(message = "비밀번호는 필수입니다.")
     @Pattern(
-            regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$",
-            message = "비밀번호는 영문과 숫자를 포함한 8~20자리여야 합니다."
+            regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9]).{8,20}$",
+            message = "비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자리여야 합니다."
     )
     private String password;
+
+    @NotNull(message = "역할은 필수입니다.")
+    private Role role;
 }

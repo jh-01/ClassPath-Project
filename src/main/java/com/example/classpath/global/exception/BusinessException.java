@@ -1,6 +1,5 @@
 package com.example.classpath.global.exception;
 
-import com.example.classpath.global.common.ErrorType;
 import lombok.Getter;
 
 @Getter
@@ -15,5 +14,9 @@ public class BusinessException extends RuntimeException {
     public BusinessException(ErrorType errorType, String message) {
         super(message);
         this.errorType = errorType;
+    }
+
+    public String getMessage() {
+        return errorType.getErrorMessage();
     }
 }
