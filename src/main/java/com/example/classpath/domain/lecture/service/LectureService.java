@@ -51,7 +51,6 @@ public class LectureService {
 
     @Transactional
     public void deleteLecture(Long lectureId) {
-        //TODO 강의 삭제 시 Enrollment도 삭제 (Persist.REMOVE 사용해서)
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
         lectureRepository.delete(lecture);
     }

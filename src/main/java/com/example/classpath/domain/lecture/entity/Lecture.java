@@ -1,5 +1,6 @@
 package com.example.classpath.domain.lecture.entity;
 
+import com.example.classpath.domain.enrollment.entity.Enrollment;
 import com.example.classpath.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -8,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,6 +40,9 @@ public class Lecture extends BaseEntity {
 
     @Column(name = "end_time")
     private LocalTime endTime;
+
+    @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE)
+    private Set<Enrollment> enrollments = new HashSet<>();
 
 
     private Lecture(String name, String code, Integer maxEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
