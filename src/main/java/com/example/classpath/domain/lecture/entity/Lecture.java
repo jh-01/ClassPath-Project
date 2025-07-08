@@ -1,6 +1,7 @@
 package com.example.classpath.domain.lecture.entity;
 
 import com.example.classpath.domain.enrollment.entity.Enrollment;
+import com.example.classpath.domain.lecture.exception.LectureEnrollmentFullException;
 import com.example.classpath.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -67,5 +68,8 @@ public class Lecture extends BaseEntity {
         if(maxEnrollment != null && maxEnrollment > 0) this.maxEnrollment = maxEnrollment;
     }
 
-
+    public void enroll() {
+        if(currentEnrollment + 1 > maxEnrollment) throw new LectureEnrollmentFullException();
+        currentEnrollment++;
+    }
 }
