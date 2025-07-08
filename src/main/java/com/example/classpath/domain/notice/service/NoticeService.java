@@ -1,6 +1,12 @@
 package com.example.classpath.domain.notice.service;
 
+import com.example.classpath.domain.notice.dto.NoticeResponseDto;
+import com.example.classpath.domain.notice.entity.Notice;
 import com.example.classpath.domain.notice.repository.NoticeRepository;
+import com.example.classpath.domain.user.entity.User;
+import com.example.classpath.domain.user.repository.UserRepository;
+import com.example.classpath.global.exception.BusinessException;
+import com.example.classpath.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,5 +15,18 @@ import org.springframework.stereotype.Service;
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
+    private final UserRepository userRepository;
 
+    // 공지 생성
+    public NoticeResponseDto createNotice(String userNumber, String title, String contents) {
+
+        User user = userRepository.findByUserNumber(userNumber)
+                .orElseThrow(() -> new BusinessException(ErrorType.USER_NOT_FOUND));
+
+        Notice notice = new Notice(user, title, contents);
+
+        Notice saved = noticeRepository.save(notice);
+
+        return new NoticeResponseDto(saved);
+    }
 }
