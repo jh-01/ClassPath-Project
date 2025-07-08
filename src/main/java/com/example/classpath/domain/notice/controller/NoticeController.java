@@ -40,4 +40,12 @@ public class NoticeController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success("공지사항이 수정되었습니다.", noticeService.updateNotice(id, requestDto.getTitle(), requestDto.getContents())));
     }
+
+    // 공지 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteNotice(@PathVariable Long id){
+        noticeService.deleteNotice(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success("공지사항 삭제가 완료되었습니다.", null));
+    }
 }

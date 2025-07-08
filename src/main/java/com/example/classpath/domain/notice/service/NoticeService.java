@@ -56,4 +56,14 @@ public class NoticeService {
 
         return new NoticeResponseDto(notice);
     }
+
+    // 공지 삭제
+    public void deleteNotice(Long id) {
+
+        // 공지사항이 있는지 확인
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorType.NOTICE_NOT_FOUND));
+
+        noticeRepository.delete(notice);
+    }
 }
