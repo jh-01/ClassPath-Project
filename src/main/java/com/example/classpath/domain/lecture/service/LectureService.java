@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -69,5 +70,9 @@ public class LectureService {
 
     private boolean isValidLectureTime(LocalTime startTime, LocalTime endTime) {
         return startTime.isBefore(endTime);
+    }
+
+    public List<LectureResponse> getLectures() {
+        return lectureRepository.findAll().stream().map(LectureResponse::new).toList();
     }
 }

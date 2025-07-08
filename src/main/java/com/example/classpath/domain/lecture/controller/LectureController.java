@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/lectures")
 @RequiredArgsConstructor
@@ -41,12 +43,20 @@ public class LectureController {
     }
 
 
-
+    /**
+     * 강의명, 강의번호로 검색
+     */
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<LectureResponse>>> searchLecture(@ModelAttribute LectureSearchCondition condition,
                                                                       @PageableDefault(size = 20) Pageable pageable)
     {
         Page<LectureResponse> page = lectureService.searchLecture(condition, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("강의 정보를 조회했습니다.", page));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<LectureResponse>>> getLectures() {
+        List<LectureResponse> response = lectureService.getLectures();
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("강의 정보를 조회했습니다.", response));
     }
 }
