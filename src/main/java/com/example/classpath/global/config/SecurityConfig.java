@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->     // 세션 생성 정책 설정
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))    // 정책을 세션을 설정하지 않음으로 결정, 매 용청마다 JWT로 인증 진행
                 .authorizeHttpRequests(auth -> auth    // HTTP 요청에 대한 인가 정책 설정
-                        .requestMatchers("/auth/login").permitAll()   // 설정한 경로는 인증 없이 접근 가능
+                        .requestMatchers("/auth/login", "/users/register").permitAll()   // 설정한 경로는 인증 없이 접근 가능
                         .anyRequest().authenticated()    // 나머지 경로에 대해서는 인증된 사용자만 접근 가능하도록 설정
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);    // 기본 체인 필터에서 Username 필터앞에 jwtAuth 필터 추가
 
