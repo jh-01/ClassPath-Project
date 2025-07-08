@@ -8,7 +8,9 @@ import com.example.classpath.domain.user.repository.UserRepository;
 import com.example.classpath.global.exception.BusinessException;
 import com.example.classpath.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +30,15 @@ public class NoticeService {
         Notice saved = noticeRepository.save(notice);
 
         return new NoticeResponseDto(saved);
+    }
+
+    // 공지 단일 조회
+    public NoticeResponseDto getNotice(Long id) {
+
+        // 공지사항이 있는지 확인
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorType.NOTICE_NOT_FOUND));
+
+        return new NoticeResponseDto(notice);
     }
 }

@@ -4,6 +4,7 @@ import com.example.classpath.domain.notice.dto.NoticeCreateRequestDto;
 import com.example.classpath.domain.notice.dto.NoticeResponseDto;
 import com.example.classpath.domain.notice.service.NoticeService;
 import com.example.classpath.global.common.ApiResponse;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,15 @@ public class NoticeController {
 
     // 공지 생성
     @PostMapping
-    public ResponseEntity<ApiResponse<NoticeResponseDto>> createNotice(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody NoticeCreateRequestDto requestDto){
+    public ResponseEntity<ApiResponse<NoticeResponseDto>> createNotice(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody NoticeCreateRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("공지사항이 생성되었습니다.", noticeService.createNotice(userDetails.getUsername(), requestDto.getTitle(), requestDto.getContents())));
+    }
+
+    // 공지 단일 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<NoticeResponseDto>> getNotice(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success("공지사항을 조회하였습니다.", noticeService.getNotice(id)));
     }
 }
