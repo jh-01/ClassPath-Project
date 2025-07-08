@@ -64,4 +64,15 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    // 유저 계정 삭제
+    public void deleteUser(Long id){
+        // 해당 유저 있는지 확인
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new BusinessException(ErrorType.USER_NOT_FOUND)
+        );
+
+        // 유저 삭제
+        userRepository.delete(user);
+    }
 }

@@ -31,9 +31,20 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> changePassword(
             @RequestBody UserChangePasswordRequest request
     ){
+        // 로그인 기능 추가 후 현재 로그인한 계정 아이디값으로 변경
         userService.changePassword(1L, request);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("비밀번호 변경이 완료되었습니다.", null));
     }
+
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<Void>> deleteUser(){
+        // 로그인 기능 추가 후 현재 로그인한 계정 아이디값으로 변경
+        userService.deleteUser(1L);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("계정 삭제가 완료되었습니다.", null));
+    }
+
 }
