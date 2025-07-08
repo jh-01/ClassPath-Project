@@ -29,6 +29,7 @@ public class LectureResponse {
         this.dayOfWeek = lecture.getDayOfWeek();
         this.startTime = lecture.getStartTime();
         this.endTime = lecture.getEndTime();
-        // TODO createdAt, modifiedAt 추가
+        this.createdAt = lecture.getCreatedAt();
+        this.modifiedAt = lecture.getModifiedAt();
     }
 }
