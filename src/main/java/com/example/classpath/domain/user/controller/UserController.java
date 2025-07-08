@@ -1,6 +1,6 @@
 package com.example.classpath.domain.user.controller;
 
-import com.example.classpath.domain.user.dto.UserRegistrationRequestDto;
+import com.example.classpath.domain.user.dto.UserRegisterRequestDto;
 import com.example.classpath.domain.user.service.UserService;
 import com.example.classpath.global.common.ApiResponse;
 import jakarta.validation.Valid;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -21,7 +21,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<Void>> registerUser(
-            @RequestBody @Valid UserRegistrationRequestDto request
+            @RequestBody @Valid UserRegisterRequestDto request
             ) {
         userService.registerUser(request);
         return ResponseEntity.
