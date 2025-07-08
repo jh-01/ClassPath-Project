@@ -6,7 +6,7 @@ import com.example.classpath.domain.user.dto.UserRegisterResponse;
 import com.example.classpath.domain.user.entity.Role;
 import com.example.classpath.domain.user.entity.User;
 import com.example.classpath.domain.user.repository.UserRepository;
-import com.example.classpath.global.exception.CustomException;
+import com.example.classpath.global.exception.BusinessException;
 import com.example.classpath.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +22,7 @@ public class UserService {
     public UserRegisterResponse registerUser(UserRegisterRequestDto request) {
         // 1. userNumber 중복 검사
         if (userRepository.existsByUserNumber(request.getUserNumber())) {
-            throw new CustomException(ErrorType.DUPLICATE_USERNUMBER); // todo 커스텀 예외 처리를 만들어야한다.
+            throw new BusinessException(ErrorType.DUPLICATE_USERNUMBER); // todo 커스텀 예외 처리를 만들어야한다.
         }
         // 2. 패스워드 인코딩
         String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -38,7 +38,7 @@ public class UserService {
 
         // 5. 저장한 유저 조회
         User savedUser = userRepository.findById(user.getId()).orElseThrow(
-                () -> new CustomException(ErrorType.USER_NOT_FOUND)
+                () -> new BusinessException(ErrorType.USER_NOT_FOUND)
         );
 
         return savedUser.toDto(savedUser);
@@ -48,12 +48,12 @@ public class UserService {
     public void changePassword(Long id, UserChangePasswordRequest request){
         // 1. 해당 유저 찾기
         User user = userRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorType.USER_NOT_FOUND)
+                () -> new BusinessException(ErrorType.USER_NOT_FOUND)
         );
 
         // 2. 비밀번호 검증
         if(!passwordEncoder.matches(request.getOldPassword(), user.getPassword())){
-            throw new CustomException(ErrorType.INVALID_CREDENTIALS);
+            throw new BusinessException(ErrorType.INVALID_CREDENTIALS);
         }
         
         // 3. 비밀번호 암호화

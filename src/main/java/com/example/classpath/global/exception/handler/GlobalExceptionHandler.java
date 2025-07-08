@@ -4,7 +4,6 @@ import com.example.classpath.global.common.ApiResponse;
 import com.example.classpath.global.common.ErrorBody;
 import com.example.classpath.global.common.ErrorDetail;
 import com.example.classpath.global.exception.BusinessException;
-import com.example.classpath.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -24,14 +23,6 @@ import java.util.Objects;
 public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
-
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ApiResponse<?>> handleException(CustomException customException) {
-        ApiResponse<?> response = ApiResponse.error(customException.getErrorType());
-        return ResponseEntity
-                .status(customException.getErrorType().getHttpStatus())
-                .body(response);
-    }
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiResponse<Void>> handleBusinessException(BusinessException e) {
