@@ -26,4 +26,11 @@ public class EnrollmentPeriodController {
         enrollmentPeriodService.createPeriod(id, request);
         return ApiResponse.success("수강신청 기간이 설정되었습니다.", null);
     }
+
+    // 수강신청 기간 수정
+    @PatchMapping("/{id}")
+    public ApiResponse<Void> updatePeriod(@PathVariable Long id, @RequestBody EnrollmentPeriodRequest request) {
+        enrollmentPeriodService.updatePeriod(id, request);
+        return ApiResponse.success("수강신청 기간이 수정되었습니다.", null);
+    }
 }
