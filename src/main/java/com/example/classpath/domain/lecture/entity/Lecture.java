@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalTime;
 
@@ -51,4 +52,14 @@ public class Lecture extends BaseEntity {
     public static Lecture of(String name, String code, Integer maxEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
         return new Lecture(name, code, maxEnrollment, dayOfWeek, startTime, endTime);
     }
+
+    public void updateName(String name) {
+        if(StringUtils.hasText(name)) this.name = name;
+    }
+
+    public void updateMaxEnrollment(Integer maxEnrollment) {
+        if(maxEnrollment != null && maxEnrollment > 0) this.maxEnrollment = maxEnrollment;
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.example.classpath.domain.lecture.service;
 
 import com.example.classpath.domain.lecture.dto.LectureCreateRequest;
 import com.example.classpath.domain.lecture.dto.LectureResponse;
+import com.example.classpath.domain.lecture.dto.LectureUpdateRequest;
 import com.example.classpath.domain.lecture.entity.Lecture;
 import com.example.classpath.domain.lecture.repository.LectureRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -48,6 +49,14 @@ public class LectureService {
         //TODO 강의 삭제 시 Enrollment도 삭제 (Persist.REMOVE 사용해서)
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new EntityNotFoundException("강의가 존재하지 않습니다."));
         lectureRepository.delete(lecture);
+    }
+
+    @Transactional
+    public LectureResponse updateLecture(Long lectureId, LectureUpdateRequest requestDto) {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new EntityNotFoundException("강의가 존재하지 않습니다."));
+        lecture.updateName(requestDto.getName());
+        lecture.updateMaxEnrollment(requestDto.getMaxEnrollment());
+        return new LectureResponse(lecture);
     }
 
     private boolean isValidLectureTime(LocalTime startTime, LocalTime endTime) {

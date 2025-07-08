@@ -2,6 +2,7 @@ package com.example.classpath.domain.lecture.controller;
 
 import com.example.classpath.domain.lecture.dto.LectureCreateRequest;
 import com.example.classpath.domain.lecture.dto.LectureResponse;
+import com.example.classpath.domain.lecture.dto.LectureUpdateRequest;
 import com.example.classpath.domain.lecture.service.LectureService;
 import com.example.classpath.global.common.ApiResponse;
 import jakarta.validation.Valid;
@@ -28,4 +29,10 @@ public class LectureController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success("강의를 삭제했습니다.",null));
     }
 
+    @PatchMapping("{lectureId}")
+    public ResponseEntity<ApiResponse<LectureResponse>> updateLecture(@PathVariable Long lectureId,
+                                                                      @Valid @RequestBody LectureUpdateRequest requestDto) {
+        LectureResponse response = lectureService.updateLecture(lectureId, requestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("강의 정보를 수정했습니다.", response));
+    }
 }
