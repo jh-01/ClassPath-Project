@@ -9,6 +9,10 @@ import com.example.classpath.domain.lecture.exception.LectureCodeAlreadyExistExc
 import com.example.classpath.domain.lecture.exception.LectureNotFoundException;
 import com.example.classpath.domain.lecture.exception.LectureTimeInvalidException;
 import com.example.classpath.domain.lecture.repository.LectureRepository;
+import com.example.classpath.domain.user.entity.User;
+import com.example.classpath.domain.user.repository.UserRepository;
+import com.example.classpath.global.exception.BusinessException;
+import com.example.classpath.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +27,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class LectureService {
     private final LectureRepository lectureRepository;
+    private final UserRepository userRepository;
 
     /**
      * 강의 개설 기능
@@ -73,5 +78,10 @@ public class LectureService {
 
     public List<LectureResponse> getLectures() {
         return lectureRepository.findAll().stream().map(LectureResponse::new).toList();
+    }
+
+    public List<LectureResponse> getMyLectures(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorType.USER_NOT_FOUND));
+        return lectureRepository.findAllUserLecture(user);
     }
 }

@@ -40,7 +40,7 @@ public class Lecture extends BaseEntity {
 
     @Column(name = "end_time")
     private LocalTime endTime;
-
+    // N+1문제가 발생하기 때문에 추후에 벌크 연산으로 바꾸는 방법이 있음
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE)
     private Set<Enrollment> enrollments = new HashSet<>();
 

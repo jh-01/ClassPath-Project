@@ -1,8 +1,11 @@
 package com.example.classpath.domain.lecture.repository;
 
+import com.example.classpath.domain.enrollment.entity.QEnrollment;
 import com.example.classpath.domain.lecture.dto.LectureResponse;
 import com.example.classpath.domain.lecture.dto.LectureSearchCondition;
 import com.example.classpath.domain.lecture.dto.QLectureResponse;
+import com.example.classpath.domain.lecture.entity.QLecture;
+import com.example.classpath.domain.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,6 +17,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 
+import static com.example.classpath.domain.enrollment.entity.QEnrollment.enrollment;
 import static com.example.classpath.domain.lecture.entity.QLecture.*;
 public class LectureRepositoryCustomImpl implements LectureRepositoryCustom {
     private final EntityManager em;
@@ -45,6 +49,15 @@ public class LectureRepositoryCustomImpl implements LectureRepositoryCustom {
                         codeContain(condition.getCode())
                 );
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public List<LectureResponse> findAllUserLecture(User user) {
+        return queryFactory.select(new QLectureResponse(lecture))
+                .from(enrollment)
+                .join(enrollment.lecture,lecture)
+                .where(enrollment.user.eq(user))
+                .fetch();
     }
 
     private BooleanExpression nameContain(String name) {
