@@ -4,6 +4,7 @@ import com.example.classpath.domain.user.entity.User;
 import com.example.classpath.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.springframework.util.StringUtils;
 
 @Getter
 @Entity
@@ -34,10 +35,10 @@ public class Notice extends BaseEntity {
 
     // 공지사항 수정 메서드
     public void updateNoticeInfo(String title, String contents) {
-        if (title != null) {
+        if(StringUtils.hasText(title)){
             this.title = title;
         }
-        if (contents != null) {
+        if(StringUtils.hasText(contents)){
             this.contents = contents;
         }
     }
