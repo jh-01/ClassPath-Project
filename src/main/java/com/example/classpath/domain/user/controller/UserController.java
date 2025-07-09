@@ -1,13 +1,12 @@
 package com.example.classpath.domain.user.controller;
 
-import com.example.classpath.domain.user.dto.UserChangePasswordRequest;
-import com.example.classpath.domain.user.dto.UserRegisterRequestDto;
-import com.example.classpath.domain.user.dto.UserRegisterResponse;
+import com.example.classpath.domain.user.dto.*;
 import com.example.classpath.domain.user.service.UserService;
 import com.example.classpath.global.common.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +26,33 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success("회원가입이 완료되었습니다.", userService.registerUser(request)));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<UserResponse>> getUserById(
+            @PathVariable Long id
+    ){
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .body(ApiResponse.success("유저 조회에 성공했습니다.", userService.findUserById(id)));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<UserResponse>> getUserByNumber(
+            @RequestParam String userNumber
+    ){
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .body(ApiResponse.success("유저 조회에 성공했습니다.", userService.findUserByUserNumber(userNumber)));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUsers(
+            @RequestBody UserFindRequest request
+    ){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success("유저 목록 조회에 성공했습니다.", userService.findUsers(request)));
     }
 
     @PatchMapping

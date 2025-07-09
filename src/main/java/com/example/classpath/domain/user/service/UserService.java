@@ -1,8 +1,6 @@
 package com.example.classpath.domain.user.service;
 
-import com.example.classpath.domain.user.dto.UserChangePasswordRequest;
-import com.example.classpath.domain.user.dto.UserRegisterRequestDto;
-import com.example.classpath.domain.user.dto.UserRegisterResponse;
+import com.example.classpath.domain.user.dto.*;
 import com.example.classpath.domain.user.entity.Role;
 import com.example.classpath.domain.user.entity.User;
 import com.example.classpath.domain.user.repository.UserRepository;
@@ -10,6 +8,9 @@ import com.example.classpath.global.exception.BusinessException;
 import com.example.classpath.global.exception.ErrorType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,38 @@ public class UserService {
 
         return savedUser.toDto(savedUser);
     }
+
+    // 전체 유저 조회
+    public Page<UserResponse> findUsers(UserFindRequest request){
+        Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize());
+
+        Page<UserResponse> users = userRepository.findAllUsers(pageable);
+        if(users == null){
+            throw new BusinessException(ErrorType.USER_FETCH_FAILED);
+        }
+
+        return users;
+    }
+
+    // id로 조회
+    public UserResponse findUserById(Long id){
+        UserResponse user = userRepository.findUserById(id);
+        if(user == null){
+            throw new BusinessException(ErrorType.USER_NOT_FOUND);
+        }
+
+        return user;
+    }
+
+    // UserNumber로 조회
+    public UserResponse findUserByUserNumber(String userNumber){
+        UserResponse user = userRepository.findUserByUserNumber(userNumber);
+        if(user == null){
+            throw new BusinessException(ErrorType.USER_NOT_FOUND);
+        }
+        return user;
+    }
+
 
     // 유저 비밀번호 변경
     @Transactional

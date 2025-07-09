@@ -2,6 +2,7 @@ package com.example.classpath.domain.user.entity;
 
 import com.example.classpath.domain.user.dto.UserRegisterResponse;
 import com.example.classpath.global.common.BaseEntity;
+import com.querydsl.core.annotations.QueryProjection;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -10,7 +11,6 @@ import lombok.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Builder
 public class User extends BaseEntity {
     @Id
@@ -30,6 +30,15 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @QueryProjection
+    public User(Long id, String name, String userNumber, String password, Role role) {
+        this.id = id;
+        this.name = name;
+        this.userNumber = userNumber;
+        this.password = password;
+        this.role = role;
+    }
 
 
     public UserRegisterResponse toDto(User user){
