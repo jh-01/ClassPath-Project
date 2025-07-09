@@ -80,7 +80,7 @@ public class UserService {
 
 
     // 유저 비밀번호 변경
-
+    @Transactional
     public void changePassword(Long id, UserChangePasswordRequest request){
         // 1. 해당 유저 찾기
         User user = userRepository.findById(id).orElseThrow(
@@ -102,6 +102,7 @@ public class UserService {
     }
 
     // 유저 계정 삭제
+    @Transactional
     public void deleteUser(Long id){
         // 해당 유저 있는지 확인
         User user = userRepository.findById(id).orElseThrow(
