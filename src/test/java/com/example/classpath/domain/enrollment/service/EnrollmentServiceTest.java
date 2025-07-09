@@ -38,7 +38,7 @@ public class EnrollmentServiceTest {
     @Autowired
     private EnrollmentService enrollmentService;
 
-    private static final int THREAD_NUM = 50;
+    private static final int THREAD_NUM = 100;
     @Autowired
     private EnrollmentRepository enrollmentRepository;
 
@@ -51,7 +51,7 @@ public class EnrollmentServiceTest {
                 .toList();
 
 
-        Lecture lecture = new Lecture(1L, "테스트 강의", "C1", 10, DayOfWeek.MON, LocalTime.of(10,0), LocalTime.of(11,0));
+        Lecture lecture = new Lecture(1L, "테스트 강의", "C1", 30, DayOfWeek.MON, LocalTime.of(10,0), LocalTime.of(11,0));
         lectureRepository.save(lecture);
     }
 
@@ -97,7 +97,7 @@ public class EnrollmentServiceTest {
         System.out.println("최종 수강 인원: " + actualEnrollment);
         System.out.println("총 소요 시간: " + (endTime - startTime) + "ms");
 
-        assertEquals(10, actualEnrollment); // 정원 검사
-        assertEquals(10, successCount.get()); // 성공 수 검사
+        assertEquals(30, actualEnrollment); // 정원 검사
+        assertEquals(30, successCount.get()); // 성공 수 검사
     }
 }
