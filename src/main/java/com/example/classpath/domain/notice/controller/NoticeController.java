@@ -7,10 +7,13 @@ import com.example.classpath.global.common.ApiResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,9 +25,21 @@ public class NoticeController {
 
     // 공지 생성
     @PostMapping
-    public ResponseEntity<ApiResponse<NoticeResponseDto>> createNotice(@AuthenticationPrincipal UserDetails userDetails, @Valid @RequestBody NoticeCreateRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<NoticeResponseDto>> createNotice(@Valid @RequestBody NoticeCreateRequestDto requestDto) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Long userId = (Long) authentication.getPrincipal();
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("공지사항이 생성되었습니다.", noticeService.createNotice(userDetails.getUsername(), requestDto.getTitle(), requestDto.getContents())));
+                .body(ApiResponse.success("공지사항이 생성되었습니다.", noticeService.createNotice(userId, requestDto.getTitle(), requestDto.getContents())));
+    }
+
+    // 공지 전체 조회
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<NoticeResponseDto>>> getNotices(@PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success("공지사항을 조회하였습니다.", noticeService.getNotices(pageable)));
     }
 
     // 공지 단일 조회
