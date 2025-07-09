@@ -10,6 +10,8 @@ import com.example.classpath.global.exception.ErrorType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -21,9 +23,9 @@ public class NoticeService {
     private final UserRepository userRepository;
 
     // 공지 생성
-    public NoticeResponseDto createNotice(String userNumber, String title, String contents) {
+    public NoticeResponseDto createNotice(Long userId, String title, String contents) {
 
-        User user = userRepository.findByUserNumber(userNumber)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorType.USER_NOT_FOUND));
 
         Notice notice = new Notice(user, title, contents);
@@ -31,6 +33,11 @@ public class NoticeService {
         Notice saved = noticeRepository.save(notice);
 
         return new NoticeResponseDto(saved);
+    }
+
+    // 공지 전체 조회
+    public Page<NoticeResponseDto> getNotices(Pageable pageable) {
+        return noticeRepository.findNotices(pageable);
     }
 
     // 공지 단일 조회
