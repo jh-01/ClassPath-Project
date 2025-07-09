@@ -8,6 +8,7 @@ public enum ErrorType {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 유저입니다."),
     DUPLICATE_USERNUMBER(HttpStatus.CONFLICT, "이미 가입된 유저입니다."),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다."),
+    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND,"공지사항을 찾을 수 없습니다."),
 
     LECTURE_CODE_ALREADY_EXIST(HttpStatus.CONFLICT, "이미 존재하는 강의 코드입니다."),
     LECTURE_TIME_INVALID(HttpStatus.BAD_REQUEST,"강의 시작 시간은 종료 시간보다 이전이어야합니다."),
