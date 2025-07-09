@@ -5,6 +5,7 @@ import com.example.classpath.domain.user.dto.UserRegisterRequestDto;
 import com.example.classpath.domain.user.dto.UserRegisterResponse;
 import com.example.classpath.domain.user.service.UserService;
 import com.example.classpath.global.common.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,22 +30,26 @@ public class UserController {
 
     @PatchMapping
     public ResponseEntity<ApiResponse<Void>> changePassword(
+            HttpServletRequest servletRequest,
             @RequestBody UserChangePasswordRequest request
     ){
-        // 로그인 기능 추가 후 현재 로그인한 계정 아이디값으로 변경
-        userService.changePassword(1L, request);
+        // 로그인된 유저 아이디 가져오기
+        Long userId = (Long) servletRequest.getAttribute("userId");
+
+        userService.changePassword(userId, request);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("비밀번호 변경이 완료되었습니다.", null));
     }
 
     @DeleteMapping
-    public ResponseEntity<ApiResponse<Void>> deleteUser(){
-        // 로그인 기능 추가 후 현재 로그인한 계정 아이디값으로 변경
-        userService.deleteUser(1L);
+    public ResponseEntity<ApiResponse<Void>> deleteUser(HttpServletRequest servletRequest){
+        // 로그인된 유저 아이디 가져오기
+        Long userId = (Long) servletRequest.getAttribute("userId");
+
+        userService.deleteUser(userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success("계정 삭제가 완료되었습니다.", null));
     }
-
 }
