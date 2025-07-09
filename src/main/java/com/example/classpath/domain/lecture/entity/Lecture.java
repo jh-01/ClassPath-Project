@@ -1,5 +1,7 @@
 package com.example.classpath.domain.lecture.entity;
 
+import com.example.classpath.domain.enrollment.entity.Enrollment;
+import com.example.classpath.domain.lecture.exception.LectureEnrollmentFullException;
 import com.example.classpath.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -8,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,6 +41,9 @@ public class Lecture extends BaseEntity {
 
     @Column(name = "end_time")
     private LocalTime endTime;
+    // N+1문제가 발생하기 때문에 추후에 벌크 연산으로 바꾸는 방법이 있음
+    @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE)
+    private Set<Enrollment> enrollments = new HashSet<>();
 
 
     private Lecture(String name, String code, Integer maxEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
@@ -61,5 +68,8 @@ public class Lecture extends BaseEntity {
         if(maxEnrollment != null && maxEnrollment > 0) this.maxEnrollment = maxEnrollment;
     }
 
-
+    public void enroll() {
+        if(currentEnrollment + 1 > maxEnrollment) throw new LectureEnrollmentFullException();
+        currentEnrollment++;
+    }
 }
