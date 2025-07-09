@@ -1,6 +1,7 @@
 package com.example.classpath.domain.notice.dto;
 
 import com.example.classpath.domain.notice.entity.Notice;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class NoticeResponseDto {
 
     private final LocalDateTime modifiedAt;
 
+    @QueryProjection
     public NoticeResponseDto(Notice notice) {
         this.id = notice.getId();
         this.userId = notice.getUser().getId();
@@ -28,5 +30,4 @@ public class NoticeResponseDto {
         this.createdAt = notice.getCreatedAt();
         this.modifiedAt = notice.getModifiedAt();
     }
-
 }
