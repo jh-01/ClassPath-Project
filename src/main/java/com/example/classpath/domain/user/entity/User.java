@@ -11,6 +11,7 @@ import lombok.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Builder
 public class User extends BaseEntity {
     @Id
@@ -30,6 +31,10 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Setter
+    @Version
+    private Long version = 0L;  // 낙관적 락용 필드
 
     @QueryProjection
     public User(Long id, String name, String userNumber, String password, Role role) {

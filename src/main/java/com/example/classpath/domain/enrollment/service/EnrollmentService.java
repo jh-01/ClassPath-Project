@@ -30,14 +30,18 @@ public class EnrollmentService {
         User user = userRepository.findById(userId)
                                   .orElseThrow(() -> new BusinessException(ErrorType.USER_NOT_FOUND));
 
-        Lecture lecture = lectureRepository.findById(lectureId)
-                                           .orElseThrow(() -> new BusinessException(ErrorType.LECTURE_NOT_FOUND));
+        // 락 걸고 가져오기
+        Lecture lecture = lectureRepository.findByIdForUpdate(lectureId)
+                .orElseThrow(() -> new IllegalArgumentException("강의 없음"));
+
+        lecture.enroll();
 
         Enrollment enrollment = Enrollment.builder()
                                           .user(user)
                                           .lecture(lecture)
                                           .build();
         enrollmentRepository.save(enrollment);
+        lectureRepository.save(lecture);
     }
 
     // 수강취소

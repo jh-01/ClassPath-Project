@@ -45,6 +45,8 @@ public class Lecture extends BaseEntity {
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.REMOVE)
     private Set<Enrollment> enrollments = new HashSet<>();
 
+    @Version
+    private Long version = 0L;  // 낙관적 락용 필드
 
     private Lecture(String name, String code, Integer maxEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
         this.name = name;
