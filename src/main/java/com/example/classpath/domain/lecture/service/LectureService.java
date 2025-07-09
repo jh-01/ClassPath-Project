@@ -1,12 +1,16 @@
 package com.example.classpath.domain.lecture.service;
 
-import com.example.classpath.domain.lecture.dto.LectureCreateRequest;
-import com.example.classpath.domain.lecture.dto.LectureResponse;
-import com.example.classpath.domain.lecture.dto.LectureSearchCondition;
-import com.example.classpath.domain.lecture.dto.LectureUpdateRequest;
+import com.example.classpath.domain.lecture.dto.*;
 import com.example.classpath.domain.lecture.entity.Lecture;
+import com.example.classpath.domain.lecture.exception.LectureCodeAlreadyExistException;
+import com.example.classpath.domain.lecture.exception.LectureNotFoundException;
+import com.example.classpath.domain.lecture.exception.LectureTimeInvalidException;
 import com.example.classpath.domain.lecture.repository.LectureRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.example.classpath.domain.user.dto.UserRegisterResponse;
+import com.example.classpath.domain.user.entity.User;
+import com.example.classpath.domain.user.repository.UserRepository;
+import com.example.classpath.global.exception.BusinessException;
+import com.example.classpath.global.exception.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,13 +18,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LectureService {
-    //TODO 각 예외는 추후 커스텀 예외로 변경 예정
     private final LectureRepository lectureRepository;
+    private final UserRepository userRepository;
 
     /**
      * 강의 개설 기능
@@ -28,10 +33,10 @@ public class LectureService {
     @Transactional
     public LectureResponse createLecture(LectureCreateRequest requestDto) {
         // 강의 코드 중복 확인
-        if(lectureRepository.existsByCode(requestDto.getCode())) throw new IllegalArgumentException("강의 코드 중복");
+        if(lectureRepository.existsByCode(requestDto.getCode())) throw new LectureCodeAlreadyExistException();
         // 강의 시작 시간과 종료 시간 유효성 검사
         if(!isValidLectureTime(requestDto.getStartTime(),requestDto.getEndTime()))
-            throw new IllegalArgumentException("강의 시작 시간은 종료 시간보다 이전이어야합니다.");
+            throw new LectureTimeInvalidException();
 
         Lecture lecture = Lecture.of(
                 requestDto.getName(),
@@ -49,14 +54,13 @@ public class LectureService {
 
     @Transactional
     public void deleteLecture(Long lectureId) {
-        //TODO 강의 삭제 시 Enrollment도 삭제 (Persist.REMOVE 사용해서)
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new EntityNotFoundException("강의가 존재하지 않습니다."));
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
         lectureRepository.delete(lecture);
     }
 
     @Transactional
     public LectureResponse updateLecture(Long lectureId, LectureUpdateRequest requestDto) {
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new EntityNotFoundException("강의가 존재하지 않습니다."));
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
         lecture.updateName(requestDto.getName());
         lecture.updateMaxEnrollment(requestDto.getMaxEnrollment());
         return new LectureResponse(lecture);
@@ -66,7 +70,27 @@ public class LectureService {
         return lectureRepository.searchLecture(condition, pageable);
     }
 
+
+    public List<LectureResponse> getLectures() {
+        return lectureRepository.findAll().stream().map(LectureResponse::new).toList();
+    }
+
+    public List<LectureResponse> getMyLectures(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorType.USER_NOT_FOUND));
+        return lectureRepository.findAllUserLecture(user);
+    }
+
+    public LectureResponse getLecture(Long lectureId) {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
+        return new LectureResponse(lecture);
+    }
+
     private boolean isValidLectureTime(LocalTime startTime, LocalTime endTime) {
         return startTime.isBefore(endTime);
+    }
+
+    public Page<StudentResponse> getStudentsByLecture(Long lectureId, Pageable pageable) {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(LectureNotFoundException::new);
+        return lectureRepository.findStudentsByLecture(lecture, pageable);
     }
 }

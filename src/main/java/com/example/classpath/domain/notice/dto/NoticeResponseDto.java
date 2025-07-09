@@ -1,5 +1,6 @@
 package com.example.classpath.domain.notice.dto;
 
+import com.example.classpath.domain.notice.entity.Notice;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -19,12 +20,13 @@ public class NoticeResponseDto {
 
     private final LocalDateTime modifiedAt;
 
-    public NoticeResponseDto(Long id, Long userId, String title, String contents, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        this.id = id;
-        this.userId = userId;
-        this.title = title;
-        this.contents = contents;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+    public NoticeResponseDto(Notice notice) {
+        this.id = notice.getId();
+        this.userId = notice.getUser().getId();
+        this.title = notice.getTitle();
+        this.contents = notice.getContents();
+        this.createdAt = notice.getCreatedAt();
+        this.modifiedAt = notice.getModifiedAt();
     }
+
 }
