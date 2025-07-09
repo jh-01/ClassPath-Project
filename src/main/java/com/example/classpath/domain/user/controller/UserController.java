@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,7 +35,7 @@ public class UserController {
             @RequestBody UserChangePasswordRequest request
     ){
         // 로그인된 유저 아이디 가져오기
-        Long userId = (Long) servletRequest.getAttribute("userId");
+        Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         userService.changePassword(userId, request);
         return ResponseEntity
@@ -45,7 +46,7 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<ApiResponse<Void>> deleteUser(HttpServletRequest servletRequest){
         // 로그인된 유저 아이디 가져오기
-        Long userId = (Long) servletRequest.getAttribute("userId");
+        Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         userService.deleteUser(userId);
         return ResponseEntity
