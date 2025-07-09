@@ -56,6 +56,16 @@ public class Lecture extends BaseEntity {
         this.endTime = endTime;
     }
 
+    public Lecture(Long id, String name, String code, Integer maxEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
+        this.name = name;
+        this.code = code;
+        this.maxEnrollment = maxEnrollment;
+        this.currentEnrollment = 0;
+        this.dayOfWeek = dayOfWeek;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     public static Lecture of(String name, String code, Integer maxEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
         return new Lecture(name, code, maxEnrollment, dayOfWeek, startTime, endTime);
     }
