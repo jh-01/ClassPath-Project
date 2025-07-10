@@ -1,41 +1,41 @@
 package com.example.classpath.global.lock;
 
 import lombok.RequiredArgsConstructor;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
 public class LockService {
 
-    private final RedisLockRepository redisLockRepository;
+    private final RedissonClient redissonClient;
 
     public void executeWithLock(Long id, Runnable task) {
-        int retryCount = 0;
+        RLock lock = redissonClient.getLock("lock:lecture:" + id);
 
-        // Lock 획득 시도
-        while (!redisLockRepository.lock(id)) {
-            retryCount++;
-            // 30번까지 시도 가능, 횟수 초과시 예외 발생
-            if (retryCount >= 10) {
+        boolean acquired = false;
+        try {
+            // 최대 10초간 락 획득 시도, 락은 획득하면 2초간 유지
+            acquired = lock.tryLock(10, 2, TimeUnit.SECONDS);
+
+            if (!acquired) {
                 throw new RuntimeException("최대 재시도 횟수 초과");
             }
-            try {
-                //SpinLock 방식이 redis 에게 주는 부하를 줄여주기위한 sleep
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
 
-        // lock 획득 성공시
-        try {
             System.out.println("락 획득 성공 id=" + id + ", thread=" + Thread.currentThread().getName());
             task.run();
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         } finally {
-            // 완료 후 락 해제
-            redisLockRepository.unlock(id);
-            System.out.println("락 해제 id=" + id + ", thread=" + Thread.currentThread().getName());
+            if (acquired && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+                System.out.println("락 해제 id=" + id + ", thread=" + Thread.currentThread().getName());
+            }
         }
     }
 }
-
