@@ -5,6 +5,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -16,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 @Aspect
 @Component
@@ -23,72 +26,35 @@ import java.util.Collections;
 @Slf4j
 public class DistributedLockAspect {
     private final RedisTemplate<String, String> redisTemplate;
+    private final RedissonClient redissonClient;
 
     @Around("@annotation(distributedLock)")
     public Object executeLock(ProceedingJoinPoint joinPoint, DistributedLock distributedLock) throws Throwable {
         String key = generateKey(joinPoint, distributedLock.key());
-        String value = UUID.randomUUID().toString();
+        RLock rLock = redissonClient.getLock(key);
         
         try {
             // 락 획득 시도
-            boolean acquired = acquireLockWithRetry(
-                key, 
-                value, 
-                distributedLock.timeoutMs(),
-                distributedLock.maxAttempts(),
-                distributedLock.intervalMs()
+            boolean acquired = rLock.tryLock(
+                    distributedLock.timeoutMs(),
+                    distributedLock.intervalMs(),
+                    TimeUnit.MILLISECONDS
             );
 
             if (!acquired) {
                 throw new RuntimeException("락 획득 실패");
             }
-
+            
             // 메소드 실행
             return joinPoint.proceed();
-            
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("락 획득 중 인터럽트 발생", e);
         } finally {
-            // 락 해제
-            releaseLock(key, value);
-        }
-    }
-
-    private boolean acquireLockWithRetry(String key, String value, long timeoutMs, int maxAttempts, long intervalMs) {
-        long startTime = System.currentTimeMillis();
-        
-        for (int attempt = 0; attempt < maxAttempts; attempt++) {
-            boolean acquired = Boolean.TRUE.equals(redisTemplate.opsForValue()
-                    .setIfAbsent(key, value, Duration.ofMillis(timeoutMs)));
-            
-            if (acquired) {
-                return true;
-            }
-
-            // 전체 타임아웃 체크
-            if (System.currentTimeMillis() - startTime >= timeoutMs) {
-                return false;
-            }
-
-            try {
-                Thread.sleep(intervalMs);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return false;
+            if (rLock.isHeldByCurrentThread()) {
+                rLock.unlock();
             }
         }
-        
-        return false;
-    }
-
-    private void releaseLock(String key, String value) {
-        String script = "if redis.call('get', KEYS[1]) == ARGV[1] then " +
-                       "return redis.call('del', KEYS[1]) " +
-                       "else return 0 end";
-        
-        redisTemplate.execute(
-            new DefaultRedisScript<>(script, Long.class),
-            Collections.singletonList(key),
-            value
-        );
     }
 
     private String generateKey(ProceedingJoinPoint joinPoint, String keyTemplate) {
