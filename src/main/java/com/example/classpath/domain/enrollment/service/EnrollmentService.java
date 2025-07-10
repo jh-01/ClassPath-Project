@@ -6,6 +6,7 @@ import com.example.classpath.domain.lecture.entity.Lecture;
 import com.example.classpath.domain.lecture.repository.LectureRepository;
 import com.example.classpath.domain.user.entity.User;
 import com.example.classpath.domain.user.repository.UserRepository;
+import com.example.classpath.global.aop.DistributedLock;
 import com.example.classpath.global.exception.BusinessException;
 import com.example.classpath.global.exception.ErrorType;
 import com.example.classpath.global.redis.service.LockService;
@@ -25,66 +26,49 @@ public class EnrollmentService {
     private final LockService lockService;
 
     @Transactional
+    @DistributedLock(
+            key = "#lectureId",
+            timeoutMs = 3000,
+            maxAttempts = 5,
+            intervalMs = 50
+    )
+
     public void enroll(Long userId, Long lectureId) {
-        String lockKey = "lecture_lock_" + lectureId;
-        String lockValue = UUID.randomUUID().toString();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorType.USER_NOT_FOUND));
 
-        boolean acquired = lockService.tryLockWithRetry(lockKey, lockValue, 3000, 5, 50);
-        if (!acquired) {
-            throw new RuntimeException("이미 다른 요청이 처리중입니다.");
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new BusinessException(ErrorType.LECTURE_NOT_FOUND));
+
+        // 수강 인원 체크
+        int enrolledCount = enrollmentRepository.getEnrollmentCountByLectureId(lectureId);
+        if (enrolledCount >= lecture.getMaxEnrollment()) {
+            throw new BusinessException(ErrorType.LECTURE_ENROLLMENT_FULL);
         }
 
-        try {
-            if (enrollmentRepository.existsByUserIdAndLectureId(userId, lectureId)) {
-                throw new BusinessException(ErrorType.ALREADY_ENROLLED);
-            }
+        Enrollment enrollment = Enrollment.builder()
+                .user(user)
+                .lecture(lecture)
+                .build();
 
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new BusinessException(ErrorType.USER_NOT_FOUND));
-
-            Lecture lecture = lectureRepository.findById(lectureId)
-                    .orElseThrow(() -> new BusinessException(ErrorType.LECTURE_NOT_FOUND));
-
-            // 수강 인원 체크
-            int enrolledCount = enrollmentRepository.getEnrollmentCountByLectureId(lectureId);
-            if (enrolledCount >= lecture.getMaxEnrollment()) {
-                throw new BusinessException(ErrorType.LECTURE_ENROLLMENT_FULL);
-            }
-
-            Enrollment enrollment = Enrollment.builder()
-                    .user(user)
-                    .lecture(lecture)
-                    .build();
-
-            enrollmentRepository.save(enrollment);
-        } finally {
-            lockService.releaseLock(lockKey, lockValue);  // lockValue와 함께 해제
-        }
+        enrollmentRepository.save(enrollment);
     }
-
 
     // 수강취소
     @Transactional
+    @DistributedLock(
+            key = "#lectureId",
+            timeoutMs = 3000,
+            maxAttempts = 5,
+            intervalMs = 50
+    )
     public void cancel(Long userId, Long lectureId) {
-        String lockKey = "lecture_lock_" + lectureId;
-        String lockValue = UUID.randomUUID().toString();
+        // 락을 획득한 후에도 존재 여부를 한번 더 확인
+        Enrollment enrollment = enrollmentRepository.findByUserIdAndLectureId(userId, lectureId)
+                .orElseThrow(() -> new BusinessException(ErrorType.ENROLLMENT_NOT_FOUND));
 
-        boolean acquired = lockService.tryLockWithRetry(lockKey, lockValue, 5000, 10, 100);
-        if (!acquired) {
-            throw new RuntimeException("이미 다른 요청이 처리중입니다.");
-        }
-
-        try{
-            // 락을 획득한 후에도 존재 여부를 한번 더 확인
-            Enrollment enrollment = enrollmentRepository.findByUserIdAndLectureId(userId, lectureId)
-                    .orElseThrow(() -> new BusinessException(ErrorType.ENROLLMENT_NOT_FOUND));
-
-            // 명시적인 영속성 컨텍스트 플러시
-            enrollmentRepository.delete(enrollment);
-            enrollmentRepository.flush();
-
-        } finally {
-            lockService.releaseLock(lockKey, lockValue);  // lockValue와 함께 해제
-        }
+        // 명시적인 영속성 컨텍스트 플러시
+        enrollmentRepository.delete(enrollment);
+        enrollmentRepository.flush();
     }
 }

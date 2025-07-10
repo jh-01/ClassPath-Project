@@ -101,6 +101,7 @@ public class EnrollmentServiceTest {
         System.out.println("실패 수: " + failureCount.get());
         System.out.println("최종 수강 인원: " + actualEnrollment);
         System.out.println("총 소요 시간: " + (endTime - startTime) + "ms");
+        System.out.println("평균 처리 시간: " + String.format("%.2f", (float)(endTime - startTime)/THREAD_NUM) + "ms/건");
 
         assertEquals(30, actualEnrollment);
         assertEquals(30, successCount.get());
@@ -179,71 +180,4 @@ public class EnrollmentServiceTest {
         assertEquals(lecture.getMaxEnrollment(), cancelSuccess.get(), "정확히 30개의 수강취소만 성공해야 합니다");
         assertEquals(TOTAL_ATTEMPTS - lecture.getMaxEnrollment(), cancelFail.get(), "70개의 수강취소는 실패해야 합니다");
     }
-
-
-//    @Test
-//    void 수강신청_및_취소_동시성_테스트() throws Exception {
-//        ExecutorService executorService = Executors.newFixedThreadPool(THREAD_NUM);
-//        CountDownLatch latch = new CountDownLatch(THREAD_NUM);
-//        CyclicBarrier barrier = new CyclicBarrier(THREAD_NUM);
-//
-//        AtomicInteger enrollSuccess = new AtomicInteger();
-//        AtomicInteger enrollFail = new AtomicInteger();
-//        AtomicInteger cancelSuccess = new AtomicInteger();
-//        AtomicInteger cancelFail = new AtomicInteger();
-//
-//        ConcurrentLinkedQueue<Long> enrolledUsers = new ConcurrentLinkedQueue<>();
-//
-//        for (int i = 0; i < THREAD_NUM; i++) {
-//            final long userId = users.get(i).getId();
-//            executorService.submit(() -> {
-//                try {
-//                    barrier.await();
-//                    if (ThreadLocalRandom.current().nextBoolean()) {
-//                        enrollmentService.enroll(userId, lecture.getId());
-//                        enrolledUsers.offer(userId);
-//                        enrollSuccess.incrementAndGet();
-//                        System.out.println("Enroll success userId: " + userId);
-//                    } else {
-//                        Long cancelUserId = enrolledUsers.poll();
-//                        System.out.println("Cancel attempt userId: " + cancelUserId);
-//                        if (cancelUserId != null) {
-//                            enrollmentService.cancel(cancelUserId, lecture.getId());
-//                            cancelSuccess.incrementAndGet();
-//                        } else {
-//                            // 취소 시도할 등록된 유저가 없으므로 실패 처리
-//                            cancelFail.incrementAndGet();
-//                        }
-//                    }
-//                } catch (Exception e) {
-//                    if (e instanceof BusinessException) {
-//                        // 수강 신청/취소 실패 처리
-//                        if (e.getMessage().contains("ALREADY_ENROLLED") || e.getMessage().contains("LECTURE_ENROLLMENT_FULL")) {
-//                            enrollFail.incrementAndGet();
-//                        } else if (e.getMessage().contains("ENROLLMENT_NOT_FOUND")) {
-//                            cancelFail.incrementAndGet();
-//                        }
-//                    } else {
-//                        enrollFail.incrementAndGet();
-//                        cancelFail.incrementAndGet();
-//                    }
-//                } finally {
-//                    latch.countDown();
-//                }
-//            });
-//        }
-//
-//        latch.await();
-//        executorService.shutdown();
-//        executorService.awaitTermination(30, TimeUnit.SECONDS);
-//
-//        int finalCount = enrollmentRepository.getEnrollmentCountByLectureId(lecture.getId());
-//        System.out.println("수강신청 성공: " + enrollSuccess.get());
-//        System.out.println("수강신청 실패: " + enrollFail.get());
-//        System.out.println("수강취소 성공: " + cancelSuccess.get());
-//        System.out.println("수강취소 실패: " + cancelFail.get());
-//        System.out.println("최종 수강 인원: " + finalCount);
-//    }
-
-
 }
