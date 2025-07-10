@@ -10,7 +10,9 @@ import com.example.classpath.global.aop.DistributedLock;
 import com.example.classpath.global.exception.BusinessException;
 import com.example.classpath.global.exception.ErrorType;
 import com.example.classpath.global.redis.service.LockService;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,25 +28,18 @@ public class EnrollmentService {
     private final LockService lockService;
 
     @Transactional
-    @DistributedLock(
-            key = "#lectureId",
-            timeoutMs = 3000,
-            maxAttempts = 5,
-            intervalMs = 50
-    )
-
     public void enroll(Long userId, Long lectureId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorType.USER_NOT_FOUND));
 
-        Lecture lecture = lectureRepository.findById(lectureId)
+        Lecture lecture = lectureRepository.findByIdWithPessimisticLock(lectureId)
                 .orElseThrow(() -> new BusinessException(ErrorType.LECTURE_NOT_FOUND));
 
         // 수강 인원 체크
-        int enrolledCount = enrollmentRepository.getEnrollmentCountByLectureId(lectureId);
-        if (enrolledCount >= lecture.getMaxEnrollment()) {
-            throw new BusinessException(ErrorType.LECTURE_ENROLLMENT_FULL);
-        }
+        int enrolledCount = lecture.getCurrentEnrollment();
+
+        // 수강 인원 증가
+        lecture.enroll();
 
         Enrollment enrollment = Enrollment.builder()
                 .user(user)
@@ -56,12 +51,6 @@ public class EnrollmentService {
 
     // 수강취소
     @Transactional
-    @DistributedLock(
-            key = "#lectureId",
-            timeoutMs = 3000,
-            maxAttempts = 5,
-            intervalMs = 50
-    )
     public void cancel(Long userId, Long lectureId) {
         // 락을 획득한 후에도 존재 여부를 한번 더 확인
         Enrollment enrollment = enrollmentRepository.findByUserIdAndLectureId(userId, lectureId)

@@ -3,6 +3,8 @@ package com.example.classpath.domain.lecture.entity;
 import com.example.classpath.domain.enrollment.entity.Enrollment;
 import com.example.classpath.domain.lecture.exception.LectureEnrollmentFullException;
 import com.example.classpath.global.common.BaseEntity;
+import com.example.classpath.global.exception.BusinessException;
+import com.example.classpath.global.exception.ErrorType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -71,5 +73,12 @@ public class Lecture extends BaseEntity {
     public void enroll() {
         if(currentEnrollment + 1 > maxEnrollment) throw new LectureEnrollmentFullException();
         currentEnrollment++;
+    }
+
+    public int getCurrentEnrollment() {
+        if(this.currentEnrollment == null) return 0;
+        else if(this.currentEnrollment > this.maxEnrollment)
+            throw new BusinessException(ErrorType.LECTURE_ENROLLMENT_FULL);
+        else return this.currentEnrollment;
     }
 }

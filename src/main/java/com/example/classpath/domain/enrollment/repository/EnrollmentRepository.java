@@ -4,15 +4,11 @@ import com.example.classpath.domain.enrollment.entity.Enrollment;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-
-    boolean existsByUserIdAndLectureId(Long userId, Long lectureId);
-
-    void deleteByUserIdAndLectureId(Long userId, Long lectureId);
-
     Optional<Enrollment> findByUserIdAndLectureId(Long userId, Long lectureId);
 
-    @Query(value = "SELECT COUNT(*) FROM enrollment WHERE lecture_id = :lectureId", nativeQuery = true)
-    int getEnrollmentCountByLectureId(Long lectureId);
+    @Query("SELECT COUNT(e) FROM Enrollment e WHERE e.lecture.id = :lectureId")
+    int getEnrollmentCountByLectureId(@Param("lectureId") Long lectureId);
 }
