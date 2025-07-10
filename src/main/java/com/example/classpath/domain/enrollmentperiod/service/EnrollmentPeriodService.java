@@ -3,8 +3,9 @@ package com.example.classpath.domain.enrollmentperiod.service;
 import com.example.classpath.domain.enrollmentperiod.dto.request.EnrollmentPeriodRequest;
 import com.example.classpath.domain.enrollmentperiod.entity.EnrollmentPeriod;
 import com.example.classpath.domain.enrollmentperiod.repository.EnrollmentPeriodRepository;
+import com.example.classpath.global.exception.BusinessException;
+import com.example.classpath.global.exception.ErrorType;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,7 @@ public class EnrollmentPeriodService {
     // 수강신청 기간 설정
     @Transactional
     public void createPeriod(Long id, EnrollmentPeriodRequest request) {
-        // TODO: 예외 검증 필요
+        validatePeriod(request.getStartAt(), request.getEndAt());
         EnrollmentPeriod period = EnrollmentPeriod.builder()
                                                   .id(id)
                                                   .startAt(request.getStartAt())
@@ -31,17 +32,17 @@ public class EnrollmentPeriodService {
     // 수강신청 기간 수정
     @Transactional
     public void updatePeriod(Long id, EnrollmentPeriodRequest request) {
+        validatePeriod(request.getStartAt(), request.getEndAt());
         EnrollmentPeriod period = enrollmentPeriodRepository.findById(id)
-                                                            // TODO: 커스텀 예외로 교체
-                                                            .orElseThrow(
-                                                                () -> new IllegalArgumentException());
+                                                            .orElseThrow(() -> new BusinessException(
+                                                                ErrorType.ENROLLMENT_PERIOD_NOT_FOUND));
         period.update(request.getStartAt(), request.getEndAt());
     }
 
     // 날짜 유효성 검사
     private void validatePeriod(LocalDateTime startAt, LocalDateTime endAt) {
         if (startAt.isAfter(endAt)) {
-            throw new IllegalArgumentException();
+            throw new BusinessException(ErrorType.INVALID_ENROLLMENT_PERIOD);
         }
     }
 
@@ -49,6 +50,6 @@ public class EnrollmentPeriodService {
     @Transactional(readOnly = true)
     public EnrollmentPeriod getLatestPeriod() {
         return enrollmentPeriodRepository.findTopByOrderByCreatedAtDesc()
-            .orElseThrow(()->new NoSuchElementException());
+            .orElseThrow(()->new BusinessException(ErrorType.ENROLLMENT_PERIOD_NOT_FOUND));
     }
 }

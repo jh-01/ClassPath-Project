@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorType {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 유저입니다."),
     DUPLICATE_USERNUMBER(HttpStatus.CONFLICT, "이미 가입된 유저입니다."),
+    USER_FETCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "유저 조회에 실패했습니다."),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다."),
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND,"공지사항을 찾을 수 없습니다."),
 
@@ -14,6 +15,9 @@ public enum ErrorType {
     ALREADY_ENROLLED(HttpStatus.CONFLICT, "이미 수강 신청한 강의입니다."),
     ENROLLMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "수강 신청 내역을 찾을 수 없습니다."),
     ENROLLMENT_PERIOD_CLOSED(HttpStatus.BAD_REQUEST, "수강신청 기간이 아닙니다."),
+    // 수강신청 기간
+    ENROLLMENT_PERIOD_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 수강신청 기간을 찾을 수 없습니다."),
+    INVALID_ENROLLMENT_PERIOD(HttpStatus.BAD_REQUEST, "시작일은 종료일보다 이전이어야 합니다."),
 
 
     LECTURE_CODE_ALREADY_EXIST(HttpStatus.CONFLICT, "이미 존재하는 강의 코드입니다."),
