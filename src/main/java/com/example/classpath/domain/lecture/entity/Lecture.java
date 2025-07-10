@@ -46,7 +46,7 @@ public class Lecture extends BaseEntity {
     private Set<Enrollment> enrollments = new HashSet<>();
 
 
-    private Lecture(String name, String code, Integer maxEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
+    public Lecture(String name, String code, Integer maxEnrollment, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
         this.name = name;
         this.code = code;
         this.maxEnrollment = maxEnrollment;
