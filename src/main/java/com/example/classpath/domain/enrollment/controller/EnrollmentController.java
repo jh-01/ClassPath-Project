@@ -1,6 +1,7 @@
 package com.example.classpath.domain.enrollment.controller;
 
 import com.example.classpath.domain.enrollment.dto.request.EnrollmentRequest;
+import com.example.classpath.domain.enrollment.service.EnrollmentFacadeService;
 import com.example.classpath.domain.enrollment.service.EnrollmentService;
 import com.example.classpath.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/enrollment")
 public class EnrollmentController {
     private final EnrollmentService enrollmentService;
+    private final EnrollmentFacadeService enrollmentFacadeService;
 
     // 수강 신청
     @PostMapping
     public ApiResponse<Void> enroll(@RequestBody EnrollmentRequest request) {
-        enrollmentService.enroll(request.getUserId(), request.getLectureId());
+        enrollmentFacadeService.enrollWithLock(request.getUserId(), request.getLectureId());
         return ApiResponse.success("수강 신청되었습니다.", null);
     }
 

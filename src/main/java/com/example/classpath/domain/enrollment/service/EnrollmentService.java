@@ -33,6 +33,8 @@ public class EnrollmentService {
         Lecture lecture = lectureRepository.findById(lectureId)
                                            .orElseThrow(() -> new BusinessException(ErrorType.LECTURE_NOT_FOUND));
 
+        lecture.enroll(); // 정원 초과 시 예외 발생 처리
+
         Enrollment enrollment = Enrollment.builder()
                                           .user(user)
                                           .lecture(lecture)
