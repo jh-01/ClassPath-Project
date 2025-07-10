@@ -109,28 +109,35 @@ public class EnrollmentServiceTest {
     @Test
     void 수강취소_동시성_테스트() throws Exception {
         // 1. 먼저 수강신청을 모두 성공시키는 작업 (최대 수강인원만큼)
+        List<Long> enrolledUsersList = new ArrayList<>();  // 임시 리스트 생성
         for (int i = 0; i < lecture.getMaxEnrollment(); i++) {
             final long userId = users.get(i).getId();
             enrollmentService.enroll(userId, lecture.getId());
+            enrolledUsersList.add(userId);
             enrolledUsers.add(userId);
         }
 
-        int cancelThreadNum = lecture.getMaxEnrollment();  // 30개로 수정
-        ExecutorService executor = Executors.newFixedThreadPool(cancelThreadNum);
-        CountDownLatch startLatch = new CountDownLatch(1); // 시작 신호용
-        CountDownLatch completionLatch = new CountDownLatch(cancelThreadNum); // 완료 대기용
+        final int TOTAL_ATTEMPTS = 100;  // 총 100번 시도
+        ExecutorService executor = Executors.newFixedThreadPool(TOTAL_ATTEMPTS);
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch completionLatch = new CountDownLatch(TOTAL_ATTEMPTS);
 
         AtomicInteger cancelSuccess = new AtomicInteger();
         AtomicInteger cancelFail = new AtomicInteger();
 
-        // 모든 userId를 미리 리스트로 준비
-        List<Long> userIdsToCancel = new ArrayList<>(enrolledUsers);
+        // 30명의 userId를 100번 반복해서 사용
+        List<Long> userIdsToCancel = new ArrayList<>();
+        for (int i = 0; i < TOTAL_ATTEMPTS; i++) {
+            userIdsToCancel.add(enrolledUsersList.get(i % lecture.getMaxEnrollment()));
+        }
+
+        // 시작 시간 측정
+        long startTime = System.currentTimeMillis();
         
-        // 모든 작업을 준비
         for (Long userId : userIdsToCancel) {
             executor.submit(() -> {
                 try {
-                    startLatch.await(); // 모든 스레드가 시작 신호를 기다림
+                    startLatch.await();
                     enrollmentService.cancel(userId, lecture.getId());
                     cancelSuccess.incrementAndGet();
                 } catch (Exception e) {
@@ -142,25 +149,35 @@ public class EnrollmentServiceTest {
             });
         }
 
-        // 모든 스레드 동시 시작
         startLatch.countDown();
         
-        // 완료 대기 (30초 타임아웃 설정)
         boolean completed = completionLatch.await(30, TimeUnit.SECONDS);
         executor.shutdown();
+        
+        // 종료 시간 측정
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
         
         if (!completed) {
             throw new RuntimeException("테스트가 30초 이내에 완료되지 않았습니다.");
         }
 
+        // 잠시 대기 후 최종 결과 확인
+        Thread.sleep(100);
+        
         int finalEnrollment = enrollmentRepository.getEnrollmentCountByLectureId(lecture.getId());
         
+        System.out.println("------ 테스트 결과 ------");
+        System.out.println("총 시도 횟수: " + TOTAL_ATTEMPTS);
         System.out.println("수강취소 성공: " + cancelSuccess.get());
         System.out.println("수강취소 실패: " + cancelFail.get());
         System.out.println("최종 수강 인원: " + finalEnrollment);
+        System.out.println("총 소요 시간: " + duration + "ms");
+        System.out.println("평균 처리 시간: " + String.format("%.2f", (float)duration/TOTAL_ATTEMPTS) + "ms/건");
         
-        assertEquals(0, finalEnrollment, "모든 수강신청이 취소되어야 합니다");
-        assertEquals(cancelThreadNum, cancelSuccess.get(), "모든 취소 요청이 성공해야 합니다");
+        assertEquals(0, finalEnrollment, "모든 수강이 취소되어야 합니다");
+        assertEquals(lecture.getMaxEnrollment(), cancelSuccess.get(), "정확히 30개의 수강취소만 성공해야 합니다");
+        assertEquals(TOTAL_ATTEMPTS - lecture.getMaxEnrollment(), cancelFail.get(), "70개의 수강취소는 실패해야 합니다");
     }
 
 
