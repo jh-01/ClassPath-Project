@@ -37,7 +37,7 @@ public class EnrollmentServiceTest {
     private EnrollmentRepository enrollmentRepository;
 
     @Autowired
-    private EnrollmentFacadeService enrollmentFacadeService;
+    private EnrollmentService enrollmentService;
 
     private static final int STUDENT_COUNT = 100;  // 100명 동시 시도
     private static final int MAX_ENROLLMENT = 30; // 정원 30명
@@ -46,7 +46,7 @@ public class EnrollmentServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 사용자 1000명 생성
+        // 사용자 100명 생성
         for (int i = 0; i < STUDENT_COUNT; i++) {
             User user = new User(null, "user" + i, "2025" + i, "!1Password", Role.STUDENT);
             userRepository.save(user);
@@ -74,7 +74,7 @@ public class EnrollmentServiceTest {
             executorService.execute(() -> {
                 try {
                     barrier.await(); // 동시에 시작
-                    enrollmentFacadeService.enrollWithLock(user.getId(), lecture.getId());
+                    enrollmentService.enrollWithRetry(user.getId(), lecture.getId());
                     successCount.incrementAndGet();
                 } catch (Exception e) {
                     failureCount.incrementAndGet(); // 실패 처리
