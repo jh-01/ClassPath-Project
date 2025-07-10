@@ -7,16 +7,24 @@ import java.time.Duration;
 
 @Repository
 public class RedisRepository {
-    private static final RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+    private final RedisTemplate<String, String> redisTemplate;
 
-    // setIfAbsent() 를 활용해서 SETNX를 실행
-    public boolean lock(String key, String value, long timeoutMills) {
-        return Boolean.TRUE.equals(redisTemplate
-                .opsForValue()
-                .setIfAbsent(key, "lock", Duration.ofMillis(timeoutMills)));
+    public RedisRepository(RedisTemplate<String, String> redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
-    public void unlock(String key) {
-        redisTemplate.delete(key);
+    // setIfAbsent() 를 활용해서 SETNX를 실행
+    public boolean lock(String key, String value, long timeoutMillis) {
+        // Redis에 고유한 value 저장
+        return Boolean.TRUE.equals(redisTemplate
+                .opsForValue()
+                .setIfAbsent(key, value, Duration.ofMillis(timeoutMillis)));
+    }
+
+    public void unlock(String key, String lockValue) {
+        String currentValue = redisTemplate.opsForValue().get(key);
+        if (lockValue.equals(currentValue)) {
+            redisTemplate.delete(key);
+        }
     }
 }
