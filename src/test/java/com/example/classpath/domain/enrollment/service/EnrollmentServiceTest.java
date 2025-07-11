@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -109,32 +110,31 @@ public class EnrollmentServiceTest {
 
     @Test
     void 수강취소_동시성_테스트() throws Exception {
-        // 1. 먼저 수강신청을 모두 성공시키는 작업 (최대 수강인원만큼)
-        List<Long> enrolledUsersList = new ArrayList<>();  // 임시 리스트 생성
-        for (int i = 0; i < lecture.getMaxEnrollment(); i++) {
-            final long userId = users.get(i).getId();
-            enrollmentService.enroll(userId, lecture.getId());
-            enrolledUsersList.add(userId);
-            enrolledUsers.add(userId);
+        // 1. 수강신청 모두 시도 (100명 중 30명만 성공)
+        for (int i = 0; i < users.size(); i++) {
+            try {
+                enrollmentService.enroll(users.get(i).getId(), lecture.getId());
+            } catch (Exception e) {
+                // 70명 실패 예상 - 무시
+            }
         }
 
-        final int TOTAL_ATTEMPTS = 100;  // 총 100번 시도
-        ExecutorService executor = Executors.newFixedThreadPool(TOTAL_ATTEMPTS);
+        final int THREAD_COUNT = users.size();  // 100명 전원 시도
+
+        ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
+
+        List<Long> userIdsToCancel = users.stream()
+                .map(User::getId)
+                .collect(Collectors.toList());
+
         CountDownLatch startLatch = new CountDownLatch(1);
-        CountDownLatch completionLatch = new CountDownLatch(TOTAL_ATTEMPTS);
+        CountDownLatch completionLatch = new CountDownLatch(userIdsToCancel.size());
 
         AtomicInteger cancelSuccess = new AtomicInteger();
         AtomicInteger cancelFail = new AtomicInteger();
 
-        // 30명의 userId를 100번 반복해서 사용
-        List<Long> userIdsToCancel = new ArrayList<>();
-        for (int i = 0; i < TOTAL_ATTEMPTS; i++) {
-            userIdsToCancel.add(enrolledUsersList.get(i % lecture.getMaxEnrollment()));
-        }
-
-        // 시작 시간 측정
         long startTime = System.currentTimeMillis();
-        
+
         for (Long userId : userIdsToCancel) {
             executor.submit(() -> {
                 try {
@@ -143,7 +143,6 @@ public class EnrollmentServiceTest {
                     cancelSuccess.incrementAndGet();
                 } catch (Exception e) {
                     cancelFail.incrementAndGet();
-                    System.err.println("Cancel failed for userId: " + userId + " - " + e.getMessage());
                 } finally {
                     completionLatch.countDown();
                 }
@@ -151,33 +150,30 @@ public class EnrollmentServiceTest {
         }
 
         startLatch.countDown();
-        
-        boolean completed = completionLatch.await(30, TimeUnit.SECONDS);
+
+        boolean completed = completionLatch.await(10, TimeUnit.SECONDS);
         executor.shutdown();
-        
-        // 종료 시간 측정
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-        
+
         if (!completed) {
-            throw new RuntimeException("테스트가 30초 이내에 완료되지 않았습니다.");
+            throw new RuntimeException("테스트가 10초 이내에 완료되지 않았습니다.");
         }
 
-        // 잠시 대기 후 최종 결과 확인
-        Thread.sleep(100);
-        
         int finalEnrollment = enrollmentRepository.getEnrollmentCountByLectureId(lecture.getId());
-        
+
+        long duration = System.currentTimeMillis() - startTime;
+
         System.out.println("------ 테스트 결과 ------");
-        System.out.println("총 시도 횟수: " + TOTAL_ATTEMPTS);
+        System.out.println("총 시도 횟수: " + THREAD_COUNT);
         System.out.println("수강취소 성공: " + cancelSuccess.get());
         System.out.println("수강취소 실패: " + cancelFail.get());
         System.out.println("최종 수강 인원: " + finalEnrollment);
-        System.out.println("총 소요 시간: " + duration + "ms");
-        System.out.println("평균 처리 시간: " + String.format("%.2f", (float)duration/TOTAL_ATTEMPTS) + "ms/건");
-        
+        System.out.println("총 소요 시간: " + (duration) + "ms");
+        System.out.println("평균 처리 시간: " + String.format("%.2f", (float)(duration)/THREAD_NUM) + "ms/건");
+
         assertEquals(0, finalEnrollment, "모든 수강이 취소되어야 합니다");
-        assertEquals(lecture.getMaxEnrollment(), cancelSuccess.get(), "정확히 30개의 수강취소만 성공해야 합니다");
-        assertEquals(TOTAL_ATTEMPTS - lecture.getMaxEnrollment(), cancelFail.get(), "70개의 수강취소는 실패해야 합니다");
+        assertEquals(lecture.getMaxEnrollment(), cancelSuccess.get(), "수강취소 성공은 수강인원만큼");
+        assertEquals(THREAD_COUNT - lecture.getMaxEnrollment(), cancelFail.get(), "수강하지 않은 인원은 취소 실패");
     }
+
+
 }

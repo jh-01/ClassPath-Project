@@ -12,7 +12,6 @@ import java.util.Optional;
 public interface LectureRepository extends JpaRepository<Lecture,Long>, LectureRepositoryCustom {
     boolean existsByCode(String code);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select l from Lecture l where l.id = :id")
-    Optional<Lecture> findByIdWithPessimisticLock(@Param("id") Long id);
+    @Query(value = "SELECT * FROM lecture WHERE id = :id FOR UPDATE", nativeQuery = true)
+    Optional<Lecture> findByIdForUpdate(@Param("id") Long id);
 }

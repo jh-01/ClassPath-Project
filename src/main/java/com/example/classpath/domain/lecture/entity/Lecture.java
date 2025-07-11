@@ -71,8 +71,10 @@ public class Lecture extends BaseEntity {
     }
 
     public void enroll() {
-        if(currentEnrollment + 1 > maxEnrollment) throw new LectureEnrollmentFullException();
-        currentEnrollment++;
+        if (this.currentEnrollment >= this.maxEnrollment) {
+            throw new BusinessException(ErrorType.LECTURE_ENROLLMENT_FULL);
+        }
+        this.currentEnrollment++;
     }
 
     public int getCurrentEnrollment() {
@@ -80,5 +82,10 @@ public class Lecture extends BaseEntity {
         else if(this.currentEnrollment > this.maxEnrollment)
             throw new BusinessException(ErrorType.LECTURE_ENROLLMENT_FULL);
         else return this.currentEnrollment;
+    }
+
+    public void cancel() {
+        if(currentEnrollment == 0) throw new BusinessException(ErrorType.LECTURE_ENROLLMENT_EMPTY);
+        if(currentEnrollment > 0) currentEnrollment--;
     }
 }

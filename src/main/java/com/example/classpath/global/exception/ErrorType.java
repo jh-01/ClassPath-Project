@@ -23,7 +23,11 @@ public enum ErrorType {
     LECTURE_CODE_ALREADY_EXIST(HttpStatus.CONFLICT, "이미 존재하는 강의 코드입니다."),
     LECTURE_TIME_INVALID(HttpStatus.BAD_REQUEST,"강의 시작 시간은 종료 시간보다 이전이어야합니다."),
     LECTURE_NOT_FOUND(HttpStatus.NOT_FOUND,"강의가 존재하지 않습니다."),
-    LECTURE_ENROLLMENT_FULL(HttpStatus.CONFLICT,"수강 정원이 모두 차서 더 이상 신청할 수 없습니다.")
+    LECTURE_ENROLLMENT_FULL(HttpStatus.CONFLICT,"수강 정원이 모두 차서 더 이상 신청할 수 없습니다."),
+    LECTURE_ENROLLMENT_EMPTY(HttpStatus.BAD_REQUEST, "수강 정원이 존재하지 않습니다."),
+
+    // Lock
+    LOCK_ACQUISITION_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "락 획득 실패")
 
     ;
 
