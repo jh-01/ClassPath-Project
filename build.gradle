@@ -59,11 +59,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
 
-    // Redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-    // redisson
-    implementation 'org.redisson:redisson-spring-boot-starter:3.17.4'
+//    // Redis
+//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+//
+//    // redisson
+//    implementation 'org.redisson:redisson-spring-boot-starter:3.17.4'
 }
 
 tasks.named('test') {
