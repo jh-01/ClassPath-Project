@@ -60,7 +60,10 @@ export default function () {
 
     if (enrollRes.status === 200) success200.add(1);
     else if (enrollRes.status === 409) success409.add(1);
-    else fail.add(1);
+    else {
+        console.error(`[알 수 없는 응답 상태] userId=${userId}, status=${enrollRes.status}, body=${enrollRes.body}`);
+        fail.add(1);
+    }
 
     check(enrollRes, {
         'HTTP 상태 코드: 200 or 409': (r) => r.status === 200 || r.status === 409,
