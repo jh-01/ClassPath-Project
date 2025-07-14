@@ -41,10 +41,9 @@ public class EnrollmentService {
                 .orElseThrow(() -> new BusinessException(ErrorType.LECTURE_NOT_FOUND));
 
         // 수강 인원 체크
-        int enrolledCount = enrollmentRepository.getEnrollmentCountByLectureId(lectureId);
-        if (enrolledCount >= lecture.getMaxEnrollment()) {
-            throw new BusinessException(ErrorType.LECTURE_ENROLLMENT_FULL);
-        }
+        lecture.enroll();
+
+        lectureRepository.save(lecture);
 
         Enrollment enrollment = Enrollment.builder()
                 .user(user)
@@ -66,6 +65,9 @@ public class EnrollmentService {
         // 락을 획득한 후에도 존재 여부를 한번 더 확인
         Enrollment enrollment = enrollmentRepository.findByUserIdAndLectureId(userId, lectureId)
                 .orElseThrow(() -> new BusinessException(ErrorType.ENROLLMENT_NOT_FOUND));
+
+        Lecture lecture = enrollment.getLecture();
+        lecture.cancel();
 
         // 명시적인 영속성 컨텍스트 플러시
         enrollmentRepository.delete(enrollment);
