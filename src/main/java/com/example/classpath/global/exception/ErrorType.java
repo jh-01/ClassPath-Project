@@ -16,6 +16,7 @@ public enum ErrorType {
     ENROLLMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "수강 신청 내역을 찾을 수 없습니다."),
     ENROLLMENT_PERIOD_CLOSED(HttpStatus.BAD_REQUEST, "수강신청 기간이 아닙니다."),
     // 수강신청 기간
+    ENROLLMENT_PERIOD_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "수강신청 기간은 이미 존재합니다."),
     ENROLLMENT_PERIOD_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 수강신청 기간을 찾을 수 없습니다."),
     INVALID_ENROLLMENT_PERIOD(HttpStatus.BAD_REQUEST, "시작일은 종료일보다 이전이어야 합니다."),
 
