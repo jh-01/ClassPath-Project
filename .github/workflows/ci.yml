@@ -1,0 +1,33 @@
+name: Project CI # 워크 플로우 이름 : 워크플로우는 GitHub Actions에서 실행할 자동화 시나리오
+
+on:    # 언제?
+  push:    # 코드가 푸쉬할 때 동작
+    branches: ["main", "dev"]    # 메인과 데브 브랜치에 푸쉬할 때
+  pull_request:    # PR이 생성이나 업데이트 될 때도 실행
+    branches: ["main", "dev"]
+
+jobs:    # 무슨 작업을 수행함?
+  build:    # 작업이름 정의: 보통 build나 test로 정의한다.
+
+    runs-on: ubuntu-latest    # GitHub가 제공하는 가상 머신이 어떤 운영체제에서 실행될 지 선택 : 우분투 최신버전을 선택
+
+    steps:    # 커맨드 라인이 한줄씩 실행할 명령어를 정의
+      - name: Checkout code    # 이 스텝의 이름을 Checkout code로 명명
+        uses: actions/checkout@v3    # GitHub에서 제공하는 공식 액션: 현재 워크 플로우를 실행중인 가상 머신에 현재 브랜치 소스 코드를 클론
+        with:
+          fetch-depth: 1    # 1은 최신 커밋만 0은 전체 커밋 다 가져오는 것
+
+      - name: Set up JDK 17    # 이번 스텝의 이름은 Set up JDK 17
+        uses: actions/setup-java@v3    # GitHub에서 제공하는 공식 액션: Java 설치
+        with:
+          java-version: '17'    # 사용할 자바 버전 17
+          distribution: 'temurin'    # 사용할 SDK 테무린
+
+      - name: authorization for Gradle    # 스텝 이름
+        run: chmod +x gradlew    # 리눅스 환경에서 gradlew 파일에 실행권한 부여, 권한이 없으면 Permission for Gradle이 뜬다
+
+      - name: Build with Gradle    # 스텝 이름
+        run: ./gradlew build    # 전체 빌드 실행: 컴파일 + 테스트 + jar 생성
+
+      - name: Run tests for log    # 스텝 이름
+        run: ./gradlew test    # 테스트 결과만 따로 빼서 로그 확인용으로 작성
