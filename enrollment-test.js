@@ -13,8 +13,7 @@ export let success409 = new Counter('enrollment_conflict');
 export let fail = new Counter('enrollment_fail');
 
 export default function () {
-    const baseUrls = ['http://localhost:8080', 'http://localhost:8081'];
-    const baseUrl = baseUrls[Math.floor(Math.random() * baseUrls.length)];
+    const baseUrl = 'http://localhost:8080';
     const idNumber = __VU;
 
     // 1. 로그인 (userNumber = 2023xxxx 형식)
@@ -29,9 +28,11 @@ export default function () {
     console.log('loginRes body:', loginRes.body);
 
     let token = null;
+    let userId = null;
     try {
         const json = loginRes.json();
-        token = json?.data?.accessTokken;  // 오타 수정: accessTokken → accessToken
+        token = json?.data?.accessTokken;
+        userId = json?.data?.user?.id;
     } catch (e) {
         console.error(`[로그인 JSON 파싱 실패]`, e);
     }
@@ -41,9 +42,6 @@ export default function () {
         fail.add(1);
         return;
     }
-
-    // 이제 userId를 JWT에서 가져오지 않고 idNumber를 그대로 사용
-    const userId = idNumber;
 
     // 2. 수강 신청 요청
     const enrollPayload = JSON.stringify({
