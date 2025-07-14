@@ -12,7 +12,7 @@
             <b>팀장</b><br />
             <a href="https://github.com/jh-01" style="font-size: 16px;">김지현</a>
             <div style="margin-top: 5px; font-size: 14px;">
-              검색<br />경매<br />초기 인프라 구축<br />CQRS<br />MSA 전환(gRPC)
+              유저<br />동시성 제어 및 테스트<br />CI/CD<br />k6 부하 테스트<br />
             </div>
           </div>
         </td>
@@ -22,7 +22,7 @@
             <b>팀원</b><br />
             <a href="https://github.com/ko-dongwon" style="font-size: 16px;">고동원</a>
             <div style="margin-top: 5px; font-size: 14px;">
-              경매<br />모니터링 시스템<br />만료된 쿠폰 처리 배치<br />배치 서버 CI/CD<br />MSA 전환(OpenFeign)
+              강의<br />동시성 제어 및 테스트<br />k6 부하 테스트<br />
             </div>
           </div>
         </td>
@@ -32,7 +32,7 @@
             <b>팀원</b><br />
             <a href="https://github.com/dain391" style="font-size: 16px;">이다인</a>
             <div style="margin-top: 5px; font-size: 14px;">
-              경매<br />알림<br />검색<br />환불 예외 보상 배치<br />Gateway, Eureka<br />Circuit Breaker
+              수강신청<br />동시성 제어 및 테스트<br />
             </div>
           </div>
         </td>
@@ -42,7 +42,7 @@
             <b>팀원</b><br />
             <a href="https://github.com/syumz" style="font-size: 16px;">임서연</a>
             <div style="margin-top: 5px; font-size: 14px;">
-              결제<br />쿠폰<br />경매<br />동시성 제어<br />Terraform<br />CI/CD
+              공지사항<br />동시성 제어 및 테스트<br />캐싱<br />
             </div>
           </div>
         </td>
@@ -52,7 +52,7 @@
             <b>팀원</b><br />
             <a href="https://github.com/imtaehun" style="font-size: 16px;">임태훈</a>
             <div style="margin-top: 5px; font-size: 14px;">
-              결제<br />쿠폰<br />경매<br />동시성 제어<br />Terraform<br />CI/CD
+              인증·인가 (JWT)<br />동시성 제어 및 테스트<br />CI/CD
             </div>
           </div>
         </td>
