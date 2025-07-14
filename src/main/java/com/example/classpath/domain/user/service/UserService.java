@@ -48,15 +48,8 @@ public class UserService {
     }
 
     // 전체 유저 조회
-    public Page<UserResponse> findUsers(UserFindRequest request){
-        Pageable pageable = PageRequest.of(request.getPage() - 1, request.getSize());
-
-        Page<UserResponse> users = userRepository.findAllUsers(pageable);
-        if(users == null){
-            throw new BusinessException(ErrorType.USER_FETCH_FAILED);
-        }
-
-        return users;
+    public Page<UserResponse> findUsers(Pageable pageable){
+        return userRepository.findAllUsers(pageable);
     }
 
     // id로 조회

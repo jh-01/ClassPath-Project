@@ -7,19 +7,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/register")
+    @PostMapping("/users/register")
     public ResponseEntity<ApiResponse<UserRegisterResponse>> registerUser(
             @RequestBody @Valid UserRegisterRequestDto request
             ) {
@@ -28,7 +30,7 @@ public class UserController {
                 .body(ApiResponse.success("회원가입이 완료되었습니다.", userService.registerUser(request)));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/admin/users/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(
             @PathVariable Long id
     ){
@@ -37,7 +39,7 @@ public class UserController {
                 .body(ApiResponse.success("유저 조회에 성공했습니다.", userService.findUserById(id)));
     }
 
-    @GetMapping
+    @GetMapping("/admin/users")
     public ResponseEntity<ApiResponse<UserResponse>> getUserByNumber(
             @RequestParam String userNumber
     ){
@@ -46,16 +48,16 @@ public class UserController {
                 .body(ApiResponse.success("유저 조회에 성공했습니다.", userService.findUserByUserNumber(userNumber)));
     }
 
-    @GetMapping("/all")
+    @GetMapping("/admin/users/all")
     public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUsers(
-            @RequestBody UserFindRequest request
+            @PageableDefault(size = 20) Pageable pageable
     ){
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.success("유저 목록 조회에 성공했습니다.", userService.findUsers(request)));
+                .body(ApiResponse.success("유저 목록 조회에 성공했습니다.", userService.findUsers(pageable)));
     }
 
-    @PatchMapping
+    @PatchMapping("/users/me")
     public ResponseEntity<ApiResponse<Void>> changePassword(
             HttpServletRequest servletRequest,
             @RequestBody UserChangePasswordRequest request
@@ -69,7 +71,7 @@ public class UserController {
                 .body(ApiResponse.success("비밀번호 변경이 완료되었습니다.", null));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/users/me")
     public ResponseEntity<ApiResponse<Void>> deleteUser(HttpServletRequest servletRequest){
         // 로그인된 유저 아이디 가져오기
         Long userId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
