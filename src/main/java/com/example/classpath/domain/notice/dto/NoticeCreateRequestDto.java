@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 public class NoticeCreateRequestDto {
 
-    @NotBlank(message = "제목은 필수입니다.")
+    @NotBlank
     private final String title;
 
-    @NotBlank(message = "내용은 필수입니다.")
+    @NotBlank
     private final String contents;
 
     public NoticeCreateRequestDto(String title, String contents) {

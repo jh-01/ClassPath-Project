@@ -6,5 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EnrollmentPeriodRepository extends JpaRepository<EnrollmentPeriod, Long> {
 
-    Optional<EnrollmentPeriod> findTopByOrderByCreatedAtDesc();
+    Optional<EnrollmentPeriod> findFirstBy();
+
+    boolean existsBy();
 }

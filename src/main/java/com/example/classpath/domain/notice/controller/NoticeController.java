@@ -17,14 +17,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/notices")
+@RequestMapping
 @RequiredArgsConstructor
 public class NoticeController {
 
     private final NoticeService noticeService;
 
     // 공지 생성
-    @PostMapping
+    @PostMapping("/admin/notices")
     public ResponseEntity<ApiResponse<NoticeResponseDto>> createNotice(@Valid @RequestBody NoticeCreateRequestDto requestDto) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -36,28 +36,28 @@ public class NoticeController {
     }
 
     // 공지 전체 조회
-    @GetMapping
+    @GetMapping("/notices")
     public ResponseEntity<ApiResponse<Page<NoticeResponseDto>>> getNotices(@PageableDefault(size = 20) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success("공지사항을 조회하였습니다.", noticeService.getNotices(pageable)));
     }
 
     // 공지 단일 조회
-    @GetMapping("/{id}")
+    @GetMapping("/notices/{id}")
     public ResponseEntity<ApiResponse<NoticeResponseDto>> getNotice(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success("공지사항을 조회하였습니다.", noticeService.getNotice(id)));
     }
 
     // 공지 수정
-    @PatchMapping("/{id}")
+    @PatchMapping("/admin/notices/{id}")
     public ResponseEntity<ApiResponse<NoticeResponseDto>> updateNotice(@PathVariable Long id, @RequestBody NoticeCreateRequestDto requestDto){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success("공지사항이 수정되었습니다.", noticeService.updateNotice(id, requestDto.getTitle(), requestDto.getContents())));
     }
 
     // 공지 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/notices/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteNotice(@PathVariable Long id){
         noticeService.deleteNotice(id);
         return ResponseEntity.status(HttpStatus.OK)

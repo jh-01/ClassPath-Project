@@ -18,10 +18,14 @@ public class EnrollmentPeriodService {
 
     // 수강신청 기간 설정
     @Transactional
-    public void createPeriod(Long id, EnrollmentPeriodRequest request) {
+    public void createPeriod(EnrollmentPeriodRequest request) {
         validatePeriod(request.getStartAt(), request.getEndAt());
+
+        if (enrollmentPeriodRepository.existsBy()) {
+            throw new BusinessException(ErrorType.ENROLLMENT_PERIOD_ALREADY_EXISTS);
+        }
+
         EnrollmentPeriod period = EnrollmentPeriod.builder()
-                                                  .id(id)
                                                   .startAt(request.getStartAt())
                                                   .endAt(request.getEndAt())
                                                   .build();
@@ -48,8 +52,8 @@ public class EnrollmentPeriodService {
 
     // 최신 수강신청 기간 조회
     @Transactional(readOnly = true)
-    public EnrollmentPeriod getLatestPeriod() {
-        return enrollmentPeriodRepository.findTopByOrderByCreatedAtDesc()
+    public EnrollmentPeriod getPeriod() {
+        return enrollmentPeriodRepository.findFirstBy()
             .orElseThrow(()->new BusinessException(ErrorType.ENROLLMENT_PERIOD_NOT_FOUND));
     }
 }

@@ -7,14 +7,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -39,11 +39,13 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {    // 요청
                 String userNumber = claims.get("userNumber", String.class);
                 String role = claims.get("role", String.class);
 
+                List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(
                                 userId,    // Principal
                                 null,    // 비밀번호 JWT에서는 null 처리
-                                Collections.emptyList()    // todo 권한 목록 ROLE 기반 인증 처리
+                                authorities    // todo 권한 목록 ROLE 기반 인증 처리
                         );
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));    // 인증 객체에 세션 고유 정보등을 추가로 기록
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);    // 스프링 컨텍스트에 인증 객체 등록 -> 스프링 컨텍스트를 통해 인증된 유저 정보 활용 가능

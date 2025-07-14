@@ -72,4 +72,10 @@ public class Lecture extends BaseEntity {
         if(currentEnrollment + 1 > maxEnrollment) throw new LectureEnrollmentFullException();
         currentEnrollment++;
     }
+
+    public void cancel() {
+        if (currentEnrollment > 0) {
+            currentEnrollment--;
+        }
+    }
 }
