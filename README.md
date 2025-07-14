@@ -97,13 +97,10 @@
 </div>
 
 ## 5. ERD
-
-<details>
-<summary> ERD 보기 </summary>
 <p align="center">
 <img width="934" height="683" alt="image" src="https://github.com/user-attachments/assets/9678810c-ce03-4532-9116-7ca3e73f2fc3" />
 </p>
-</details>
+
 
 <h2>6. <a href="https://www.notion.so/teamsparta/2292dc3ef51480a0a5f8d705322edfdf?v=2292dc3ef5148019be7d000cbdc6a4d5&source=copy_link">API 명세</a></h2>
 
@@ -120,13 +117,12 @@
 #### 📈 도입 전후 비교
 시나리오 : 50명 정원의 강의에 대해 200명이 한번에 요청
 - **도입 전**: 동시 요청으로 인해 데이터 불일치 발생, 데드락 발생, 요청 실패율 증가.
-<details>
-<summary> 결과 이미지 보기 </summary>
+
 <p align="center">
 <img width="1179" height="609" alt="image" src="https://github.com/user-attachments/assets/cb384491-05fe-491b-8df7-a4a643a76816" />
 <img width="412" height="120" alt="image" src="https://github.com/user-attachments/assets/ce5ebe46-935e-4f22-ab95-c23cf095ad4f" />
 </p>
-</details>
+
 
 | 구분      | 표본 수    | 평균 (ms)  | 최소값 (ms)    | 최대값 (ms) | p(90)(ms)  | p(95)(ms) |  오류 %   |
 |-----------|---------|-----------|--------------|-----------|-------------|-----------|----------|
@@ -134,13 +130,12 @@
 
 
 - **도입 후**: 동시성 제어에 성공하여 정확한 강의 인원 관리, 요청 실패율 0%.
-<details>
-<summary> 결과 이미지 보기 </summary>
+
 <p align="center">
 <img width="1188" height="614" alt="image" src="https://github.com/user-attachments/assets/cabe400f-c585-4cde-8165-1651eb993e25" />
 <img width="426" height="153" alt="image" src="https://github.com/user-attachments/assets/bdc22e9b-d041-4113-bc2d-919de782f83b" />
 </p>
-</details>
+
 
 | 구분      | 표본 수    | 평균 (ms)  | 최소값 (ms)    | 최대값 (ms) | p(90)(ms)  | p(95)(ms) |  오류 %   |
 |-----------|---------|-----------|--------------|-----------|-------------|-----------|----------|
