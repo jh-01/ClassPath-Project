@@ -93,7 +93,7 @@
 
 ## 4. 아키텍쳐
 <div align="center">
-<img width="803" height="510" alt="image" src="https://github.com/user-attachments/assets/c2a5ffaa-4fb2-4d1b-8ed7-88240a3293ca" />
+<img width="719" height="483" alt="image" src="https://github.com/user-attachments/assets/3bccbd5e-56ef-4844-b7a8-4f0ae0bd891d" />
 </div>
 
 ## 5. ERD
