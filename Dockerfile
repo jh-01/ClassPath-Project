@@ -1,5 +1,5 @@
 # 1단계: Gradle 빌드 (테스트 제외)
-FROM gradle:8.6-jdk21 AS build
+FROM gradle:8.6-jdk17 AS build
 
 WORKDIR /app
 COPY . .
