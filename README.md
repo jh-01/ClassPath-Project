@@ -98,7 +98,7 @@
 
 ## 5. ERD
 <p align="center">
-<img width="934" height="683" alt="image" src="https://github.com/user-attachments/assets/9678810c-ce03-4532-9116-7ca3e73f2fc3" />
+<img width="1041" height="768" alt="image" src="https://github.com/user-attachments/assets/9e32b150-2574-4be9-b6f0-77905fc8ee61" />
 </p>
 
 
