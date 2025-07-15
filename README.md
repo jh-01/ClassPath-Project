@@ -190,3 +190,20 @@
 - **90%, 95% 지연 시간(p90, p95) 대폭 개선**: p(90) 199.43ms → 48.8ms, p(95) 222.47ms → 61.27ms
 - **처리량 증가**: 캐시 적용 후 표본 수가 증가해 더 많은 요청을 처리 가능
 - **서비스 안정성 및 사용자 경험 개선**: 빠른 응답과 부하 완화로 오류 및 지연 감소 기대
+
+
+### 3. CI/CD 배포 (AWS CODE PIPELINE 활용)
+<img width="1479" height="827" alt="12조 ClassPath" src="https://github.com/user-attachments/assets/5bb24a45-d2a8-4b48-8ebb-aab7cd726fe9" />
+- 깃허브에 코드를 푸시
+- Pipeline에서 이를 트리거로 인식하여 작동
+- 소스 코드를 Code Build 에서 빌드하고 아티팩트를 S3에 저장
+- 아티팩트 저장까지 문제없이 끝났다면 Deploy에서 아티팩트를 확인하고 배포를 준비
+- 준비가 완료되면 EC2에 배포
+- 배포 중 발생하는 로그나 상태 정보는 CloudWatch에 기록
+
+
+## 8. 발표 자료
+<a href="https://www.canva.com/design/DAGs-GTp1Bw/BnUWMeOmn5xwtqex5vwJkg/edit?utm_content=DAGs-GTp1Bw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton">![12조 ClassPath](https://github.com/user-attachments/assets/b53ab558-67f4-44db-b522-51c8ed16e52a)</a>
+![12조 ClassPath](https://github.com/user-attachments/assets/d4b73357-cdff-4d5c-82b3-19fb09f0cb6e)
+![12조 ClassPath (2)](https://github.com/user-attachments/assets/a5f1782d-2ba5-465f-97fc-8e6f5e23b224)
+
