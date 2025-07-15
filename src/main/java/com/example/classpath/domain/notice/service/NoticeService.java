@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
+    private final ViewCountService viewCountService;
 
     // 공지 생성
     public NoticeResponseDto createNotice(Long userId, String title, String contents) {
@@ -41,17 +44,42 @@ public class NoticeService {
     }
 
     // 공지 단일 조회
-    public NoticeResponseDto getNotice(Long id) {
+    public NoticeResponseDto getNotice(Long userId, Long id) {
 
         // 공지사항이 있는지 확인
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorType.NOTICE_NOT_FOUND));
 
-        return new NoticeResponseDto(notice);
+        // 조회수 증가
+        viewCountService.increaseViewCount(id, userId);
+
+        // Redis에서 조회수 읽기
+        Long viewCount = viewCountService.getViewCount(id);
+
+        return new NoticeResponseDto(notice, viewCount);
     }
 
-    @Transactional
+    // 조회수 top 10 공지 조회
+    public List<NoticeResponseDto> getRankingNotices() {
+
+        // Redis에서 조회수 랭킹 Top10 공지 ID 리스트를 가져옴
+        List<Long> rankedIds = viewCountService.getRankingNoticeIds();
+
+        List<NoticeResponseDto> result = new ArrayList<>();
+        for (Long id : rankedIds) {
+            Notice notice = noticeRepository.findById(id)
+                    .orElseThrow(() -> new BusinessException(ErrorType.NOTICE_NOT_FOUND));
+
+            // Redis에서 조회수 가져오기
+            Long viewCount = viewCountService.getViewCount(id);
+            result.add(new NoticeResponseDto(notice, viewCount));
+        }
+
+        return result;
+    }
+
     // 공지 수정
+    @Transactional
     public NoticeResponseDto updateNotice(Long id, String title, String contents) {
 
         // 공지사항이 있는지 확인
@@ -66,8 +94,8 @@ public class NoticeService {
         return new NoticeResponseDto(notice);
     }
 
-    @Transactional
     // 공지 삭제
+    @Transactional
     public void deleteNotice(Long id) {
 
         // 공지사항이 있는지 확인
@@ -76,6 +104,4 @@ public class NoticeService {
 
         noticeRepository.delete(notice);
     }
-
-
 }

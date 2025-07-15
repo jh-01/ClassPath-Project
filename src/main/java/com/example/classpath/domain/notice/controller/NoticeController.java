@@ -16,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
@@ -45,8 +47,16 @@ public class NoticeController {
     // 공지 단일 조회
     @GetMapping("/notices/{id}")
     public ResponseEntity<ApiResponse<NoticeResponseDto>> getNotice(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = (Long) authentication.getPrincipal();
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("공지사항을 조회하였습니다.", noticeService.getNotice(id)));
+                .body(ApiResponse.success("공지사항을 조회하였습니다.", noticeService.getNotice(userId, id)));
+    }
+
+    // 조회수 top 10 공지 조회
+    @GetMapping("/notices/ranking")
+    public ResponseEntity<ApiResponse<List<NoticeResponseDto>>> getRankingNotices() {
+        return ResponseEntity.ok(ApiResponse.success("인기 공지 목록을 조회하였습니다.", noticeService.getRankingNotices()));
     }
 
     // 공지 수정

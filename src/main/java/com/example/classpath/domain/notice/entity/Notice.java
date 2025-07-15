@@ -23,6 +23,8 @@ public class Notice extends BaseEntity {
 
     private String contents;
 
+    private Long viewCount = 0L;
+
     public Notice(User user, String title, String contents) {
         this.user = user;
         this.title = title;
